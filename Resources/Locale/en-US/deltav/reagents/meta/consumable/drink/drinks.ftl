@@ -16,8 +16,11 @@ reagent-desc-daiquiri = A sweet mix of deadrum and lime, a favourite of writers 
 reagent-name-arsonistsbrew = arsonist's brew
 reagent-desc-arsonistsbrew = Take a sip and laugh, while you watch your world burn.
 
-reagent-name-healthviolation = health violation
+reagent-name-healthviolation = health code violation
 reagent-desc-healthviolation = Allegedly it's a cocktail. The warning cone motif seems apt.
 
 reagent-name-mothamphetamine = mothamphetamine
-regagent-desk-mothamphetamine = A strangely... fuzzy drink. It has a chaotic aura.
+reagent-desc-mothamphetamine = A strangely... fuzzy drink. It has a chaotic aura.
+
+reagent-name-double-ice-cream = Double Ice Cream
+reagent-desc-double-ice-cream = Ice cream, but now with even more ice cream on top. It doesn't get any sweeter than this!

@@ -1,32 +1,20 @@
 using Content.Shared.Actions;
+using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
-using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom.Prototype;
 
 namespace Content.Shared.Silicons.Laws.Components;
 
 /// <summary>
 /// This is used for entities which are bound to silicon laws and can view them.
 /// </summary>
-[RegisterComponent, Access(typeof(SharedSiliconLawSystem))]
+[RegisterComponent, NetworkedComponent, Access(typeof(SharedSiliconLawSystem))]
 public sealed partial class SiliconLawBoundComponent : Component
 {
     /// <summary>
-    /// The sidebar action that toggles the laws screen.
-    /// </summary>
-    [DataField("viewLawsAction", customTypeSerializer: typeof(PrototypeIdSerializer<EntityPrototype>))]
-    public string ViewLawsAction = "ActionViewLaws";
-
-    /// <summary>
-    /// The action for toggling laws. Stored here so we can remove it later.
-    /// </summary>
-    [DataField("viewLawsActionEntity")]
-    public EntityUid? ViewLawsActionEntity;
-
-    /// <summary>
     /// The last entity that provided laws to this entity.
     /// </summary>
-    [DataField("lastLawProvider")]
+    [DataField]
     public EntityUid? LastLawProvider;
 }
 
@@ -43,7 +31,7 @@ public record struct GetSiliconLawsEvent(EntityUid Entity)
 {
     public EntityUid Entity = Entity;
 
-    public readonly List<SiliconLaw> Laws = new();
+    public SiliconLawset Laws = new();
 
     public bool Handled = false;
 }

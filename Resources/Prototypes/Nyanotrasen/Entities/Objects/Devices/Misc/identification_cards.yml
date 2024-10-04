@@ -38,18 +38,17 @@
     job: PrisonGuard
 
 - type: entity
-  parent: IDCardStandard
+  parent: CourierIDCard
   id: MailCarrierIDCard
-  name: courier ID card # DeltaV - Mail Carrier to Courier replacement
+  name: mail carrier ID card
   components:
   - type: Sprite
     layers:
     - state: default
     - sprite: DeltaV/Objects/Misc/id_cards.rsi
       state: nyanomailcarrier
-  - type: PresetIdCard
-    job: MailCarrier
-
+  - type: IdCard
+    jobTitle: Mail Carrier
 
 - type: entity
   parent: IDCardStandard

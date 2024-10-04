@@ -23,6 +23,14 @@ namespace Content.Server.Roboisseur.Roboisseur
         [DataField("barkTime")]
         public TimeSpan BarkTime = TimeSpan.FromMinutes(1);
 
+        /// <summary>
+        ///     Antispam.
+        /// </summary>
+        public TimeSpan StateTime = default!;
+
+        [DataField("stateCD")]
+        public TimeSpan StateCD = TimeSpan.FromSeconds(5);
+
         [ViewVariables(VVAccess.ReadWrite)]
         public EntityPrototype DesiredPrototype = default!;
 
@@ -86,22 +94,24 @@ namespace Content.Server.Roboisseur.Roboisseur
         {
             "FoodBurgerEmpowered",
             "FoodSoupClown",
-            "FoodSoupChiliClown",
+            "FoodPiePumpkin",
+            "FoodSoupTomato",
+            "FoodBreadMeat",
+            "FoodBreadCreamcheese",
+            "FoodCheeseCurds",
             "FoodBurgerSuper",
             "FoodNoodlesCopy",
-            "FoodMothMallow",
+            // "FoodMothMallow",
             "FoodPizzaCorncob",
-            "FoodPizzDonkpocket",
+            "FoodPizzaDonkpocket",
             "FoodSoupMonkey",
-            "FoodMothSeedSoup",
             "FoodTartGrape",
-            "FoodMealCubancarp",
             "FoodMealSashimi",
             "FoodBurgerCarp",
-            "FoodMealTaco",
             "FoodMothMacBalls",
             "FoodSoupNettle",
             "FoodBurgerDuck",
+            "FoodBurgerBear",
             "FoodBurgerBaseball"
         };
 
@@ -109,11 +119,14 @@ namespace Content.Server.Roboisseur.Roboisseur
         public List<String> Tier3Protos = new()
         {
             "FoodBurgerGhost",
+            "FoodSoupChiliClown",
             "FoodSaladWatermelonFruitBowl",
+            "FoodMealCubancarp",
             "FoodBakedCannabisBrownieBatch",
             "FoodPizzaDank",
-            "FoodBurgerBear",
-            "FoodBurgerMime",
+            "FoodMothSeedSoup",
+            "FoodBreadBanana",
+            "FoodMothFleetSalad",
             "FoodCakeSuppermatter",
             "FoodSoupChiliCold",
             "FoodSoupBisque",
@@ -143,40 +156,29 @@ namespace Content.Server.Roboisseur.Roboisseur
         [DataField("blacklistedProtos")]
         public IReadOnlyList<String> BlacklistedProtos = new[]
         {
-            "FoodMothPesto",
             "FoodBurgerSpell",
-            "FoodBreadBanana",
             "FoodMothSqueakingFry",
-            "FoodMothFleetSalad",
+            "FoodBurgerMime",
             "FoodBreadMeatSpider",
             "FoodBurgerHuman",
             "FoodNoodlesBoiled",
             "FoodMothOatStew",
-            "FoodMeatLizardtailKebab",
-            "FoodSoupTomato",
-            "FoodDonkpocketGondolaWarm",
             "FoodDonkpocketBerryWarm",
-            "LockboxDecloner",
             "FoodBreadButteredToast",
             "FoodMothCottonSoup",
             "LeavesTobaccoDried",
             "FoodSoupEyeball",
             "FoodMothKachumbariSalad",
-            "FoodMeatHumanKebab",
-            "FoodMeatRatdoubleKebab",
             "FoodBurgerCorgi",
             "FoodBreadPlain",
-            "FoodMeatKebab",
             "FoodBreadBun",
             "FoodBurgerCat",
             "FoodSoupTomatoBlood",
             "FoodMothSaladBase",
             "FoodPieXeno",
-            "FoodPiePumpkin",
             "FoodPiePumpkinSlice",
             "FoodDonkpocketTeriyakiWarm",
             "FoodMothBakedCheese",
-            "FoodMothTomatoSauce",
             "FoodMothPizzaCotton",
             "AloeCream",
             "FoodSnackPopcorn",
@@ -184,25 +186,21 @@ namespace Content.Server.Roboisseur.Roboisseur
             "FoodMothToastedSeeds",
             "FoodMothCornmealPorridge",
             "FoodMothBakedCorn",
-            "FoodBreadMoldySlice",
+            // "FoodBreadMoldySlice",
             "FoodRiceBoiled",
             "FoodMothEyeballSoup",
-            "FoodMeatRatKebab",
-            "FoodBreadCreamcheese",
             "FoodSoupOnion",
             "FoodBurgerAppendix",
             "FoodBurgerRat",
             "RegenerativeMesh",
-            "FoodCheeseCurds",
             "FoodDonkpocketHonkWarm",
             "FoodOatmeal",
             "FoodBreadJellySlice",
             "FoodMothCottonSalad",
-            "FoodBreadMoldy",
+            // "FoodBreadMoldy",
             "FoodDonkpocketSpicyWarm",
             "FoodCannabisButter",
             "FoodNoodles",
-            "FoodBreadMeat",
             "LeavesCannabisDried",
             "FoodBurgerCheese",
             "FoodDonkpocketDankWarm",

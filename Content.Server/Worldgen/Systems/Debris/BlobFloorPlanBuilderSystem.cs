@@ -14,6 +14,8 @@ public sealed class BlobFloorPlanBuilderSystem : BaseWorldSystem
 {
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly ITileDefinitionManager _tileDefinition = default!;
+    [Dependency] private readonly TileSystem _tiles = default!;
+    [Dependency] private readonly SharedMapSystem _map = default!;
 
     /// <inheritdoc />
     public override void Initialize()
@@ -24,12 +26,14 @@ public sealed class BlobFloorPlanBuilderSystem : BaseWorldSystem
     private void OnBlobFloorPlanBuilderStartup(EntityUid uid, BlobFloorPlanBuilderComponent component,
         ComponentStartup args)
     {
-        PlaceFloorplanTiles(component, Comp<MapGridComponent>(uid));
+        PlaceFloorplanTiles(uid, component, Comp<MapGridComponent>(uid));
     }
 
-    private void PlaceFloorplanTiles(BlobFloorPlanBuilderComponent comp, MapGridComponent grid)
+    private void PlaceFloorplanTiles(EntityUid gridUid, BlobFloorPlanBuilderComponent comp, MapGridComponent grid)
     {
         // NO MORE THAN TWO ALLOCATIONS THANK YOU VERY MUCH.
+        // TODO: Just put these on a field instead then?
+        // Also the end of the method has a big LINQ which is gonna blow this out the water.
         var spawnPoints = new HashSet<Vector2i>(comp.FloorPlacements * 6);
         var taken = new Dictionary<Vector2i, Tile>(comp.FloorPlacements * 5);
 
@@ -56,7 +60,7 @@ public sealed class BlobFloorPlanBuilderSystem : BaseWorldSystem
                 spawnPoints.Add(west);
 
             var tileDef = _tileDefinition[_random.Pick(comp.FloorTileset)];
-            taken.Add(point, new Tile(tileDef.TileId, 0, ((ContentTileDefinition)tileDef).PickVariant(_random)));
+            taken.Add(point, new Tile(tileDef.TileId, 0, _tiles.PickVariant((ContentTileDefinition) tileDef)));
         }
 
         PlaceTile(Vector2i.Zero);
@@ -79,7 +83,7 @@ public sealed class BlobFloorPlanBuilderSystem : BaseWorldSystem
             }
         }
 
-        grid.SetTiles(taken.Select(x => (x.Key, x.Value)).ToList());
+        _map.SetTiles(gridUid, grid, taken.Select(x => (x.Key, x.Value)).ToList());
     }
 }
 

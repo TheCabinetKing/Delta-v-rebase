@@ -1,0 +1,55 @@
+# Head
+- type: loadout
+  id: MantisFezHat
+  equipment:
+    head: ClothingHeadHatFezMantis
+
+# Jumpsuit
+- type: loadout
+  id: MantisJumpsuit
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitMantis
+
+- type: loadout
+  id: MantisJumpskirt
+  equipment:
+    jumpsuit: ClothingUniformSkirtMantis
+
+# Back
+- type: loadout
+  id: MantisBackpack
+  equipment:
+    back: ClothingBackpackMantisFilled
+
+- type: loadout
+  id: MantisSatchel
+  equipment:
+    back: ClothingBackpackSatchelMantisFilled
+
+- type: loadout
+  id: MantisDuffel
+  equipment:
+    back: ClothingBackpackDuffelMantisFilled
+
+# OuterClothing
+- type: loadout
+  id: MantisCoat
+  equipment:
+    outerClothing: ClothingOuterCoatMantis
+
+- type: loadout
+  id: MantisWintercoat
+  equipment:
+    outerClothing: ClothingOuterWinterCoatMantis
+
+# Shoes
+- type: loadout
+  id: MantisBoots
+  equipment:
+    shoes: ClothingShoesBootsMantis
+
+# Gloves
+- type: loadout
+  id: WhiteGloves
+  equipment:
+    gloves: ClothingHandsGlovesColorWhite

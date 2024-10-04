@@ -1,6 +1,6 @@
 # PSB, Prepacked Sustenance Bar. With variety.
 - type: entity
-  noSpawn: true
+  categories: [ HideSpawnMenu ]
   parent: FoodPacketTrash
   id: FoodPSBTrash
   name: psb wrapper
@@ -14,13 +14,13 @@
   name: prepacked sustenance bar
   parent: BaseItem
   id: FoodPSB
-  description: The PSB is a densely packed, nutrient rich, artificially flavored and colored food bar specifically made to accomodate all morphotypes during food shortages.
+  description: The PSB is a densely packed, nutrient rich, artificially flavored and colored food bar specifically made to accomodate all species during food shortages.
   components:
   - type: Sprite
     sprite: Nyanotrasen/Objects/Consumable/Food/ration.rsi
     state: psb
   - type: Item
-    size: 3
+    size: Tiny
   - type: SpaceGarbage
   - type: StaticPrice #DynamicPrice
     price: 0
@@ -74,7 +74,7 @@
           Quantity: 15
   - type: Tag
     tags:
-    - ClothMade # DeltaV - A dirty fix to allow Moths to eat it.
+    - Fruit # DeltaV - Allow anyone to eat it, hopefully
 
 - type: entity
   name: soy sustenance bar

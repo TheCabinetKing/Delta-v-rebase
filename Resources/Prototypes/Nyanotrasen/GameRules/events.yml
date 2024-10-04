@@ -2,7 +2,6 @@
 - type: entity
   id: NoosphericStorm
   parent: BaseGameRule
-  noSpawn: true
   components:
     - type: StationEvent
       startAnnouncement: station-event-noospheric-storm-announcement
@@ -12,24 +11,10 @@
       earliestStart: 15
     - type: NoosphericStormRule
 
-# Rat king, paradox anomaly, fugitive, oneiro, etc.
-#- type: entity
-#  id: MidRoundAntag
-#  parent: BaseGameRule
-#  noSpawn: true
-#  components:
-#    - type: StationEvent
-#      weight: 7
-#      reoccurrenceDelay: 5
-#      minimumPlayers: 15
-#      earliestStart: 25
-#    - type: MidRoundAntagRule
-
 # Base glimmer event
 - type: entity
   id: BaseGlimmerEvent
   parent: BaseGameRule
-  noSpawn: true
   components:
     - type: StationEvent
       # Favor glimmer events just a little more than regular events.
@@ -40,18 +25,15 @@
 - type: entity
   id: MundaneDischarge
   parent: BaseGlimmerEvent
-  noSpawn: true
   components:
     - type: GlimmerEvent
       maximumGlimmer: 300
       glimmerBurnLower: 18
       glimmerBurnUpper: 40
-    - type: MundaneDischargeRule
 
 - type: entity
   id: NoosphericZap
   parent: BaseGlimmerEvent
-  noSpawn: true
   components:
     - type: GlimmerEvent
     - type: NoosphericZapRule
@@ -59,21 +41,20 @@
 - type: entity
   id: NoosphericFry
   parent: BaseGlimmerEvent
-  noSpawn: true
   components:
     - type: GlimmerEvent
       minimumGlimmer: 300
       maximumGlimmer: 900
     - type: NoosphericFryRule
 
+#Deltav- was 200/500, now 500/900
 - type: entity
   id: PsionicCatGotYourTongue
   parent: BaseGlimmerEvent
-  noSpawn: true
   components:
     - type: GlimmerEvent
-      minimumGlimmer: 200
-      maximumGlimmer: 500
+      minimumGlimmer: 500
+      maximumGlimmer: 900
       glimmerBurnLower: 18
       glimmerBurnUpper: 40
     - type: PsionicCatGotYourTongueRule
@@ -81,7 +62,6 @@
 - type: entity
   id: MassMindSwap
   parent: BaseGlimmerEvent
-  noSpawn: true
   components:
     - type: GlimmerEvent
       minimumGlimmer: 900
@@ -89,47 +69,48 @@
       glimmerBurnUpper: 110
     - type: MassMindSwapRule
 
-#- type: entity
-#  id: GlimmerWispSpawn
-#  parent: BaseGlimmerEvent
-#  noSpawn: true
-#  components:
-#    - type: GlimmerEvent
-#      minimumGlimmer: 300
-#      maximumGlimmer: 1000
-#      report: glimmer-event-report-signatures
-#    - type: GlimmerWispRule
+- type: entity
+  abstract: true
+  parent: BaseGlimmerEvent
+  id: BaseGlimmerSignaturesEvent
+  components:
+  - type: GlimmerEvent
+    minimumGlimmer: 300
+    maximumGlimmer: 1000
+    report: glimmer-event-report-signatures
 
 - type: entity
+  id: GlimmerWispSpawn
+  parent: BaseGlimmerSignaturesEvent
+  components:
+  - type: GlimmerMobRule
+    mobPrototype: MobGlimmerWisp
+
+- type: entity
+  parent: BaseGlimmerSignaturesEvent
   id: FreeProber
-  parent: BaseGlimmerEvent
-  noSpawn: true
   components:
-    - type: GlimmerEvent
-      minimumGlimmer: 300
-      maximumGlimmer: 1000
-      report: glimmer-event-report-signatures
-    - type: FreeProberRule
+  - type: FreeProberRule
 
-## converted upstream events
+# Converted from upstream event
 - type: entity
-  id: GlimmerRandomSentience
-  parent: BaseGlimmerEvent
-  noSpawn: true
-  components:
-    - type: GlimmerEvent
-      minimumGlimmer: 300
-      maximumGlimmer: 600
-      report: glimmer-event-report-signatures
-    - type: GlimmerRandomSentienceRule
-
-- type: entity
+  parent: BaseGlimmerSignaturesEvent
   id: GlimmerRevenantSpawn
-  parent: BaseGlimmerEvent
-  noSpawn: true
   components:
-    - type: GlimmerEvent
-      minimumGlimmer: 500
-      maximumGlimmer: 900
-      report: glimmer-event-report-signatures
-    - type: GlimmerRevenantRule
+  - type: GlimmerEvent
+    minimumGlimmer: 500
+    maximumGlimmer: 900
+  - type: GlimmerMobRule
+    mobPrototype: MobRevenant
+    maxSpawns: 1
+
+- type: entity
+  parent: BaseGlimmerSignaturesEvent
+  id: GlimmerMiteSpawn
+  components:
+  - type: GlimmerEvent
+    minimumGlimmer: 50
+    maximumGlimmer: 900
+  - type: GlimmerMobRule
+    mobPrototype: MobGlimmerMite
+    glimmerTier: Low # get more mites earlier on

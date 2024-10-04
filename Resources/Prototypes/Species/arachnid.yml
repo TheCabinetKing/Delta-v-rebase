@@ -63,6 +63,12 @@
     Chest:
       points: 1
       required: false
+    Legs:
+      points: 6
+      required: false
+    Arms:
+      points: 6
+      required: false
 
 - type: humanoidBaseSprite
   id: MobArachnidHead

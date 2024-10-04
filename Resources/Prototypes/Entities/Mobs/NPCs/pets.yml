@@ -34,6 +34,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalIan
 
 - type: entity
   name: Old Ian
@@ -84,6 +86,47 @@
       gender: female
 
 - type: entity
+  name: real mouse
+  parent: MobCorgiIan
+  id: MobCorgiMouse
+  description: It's 100% a real hungry mouse.
+  components:
+  - type: Sprite
+    layers:
+    - map: ["enum.DamageStateVisualLayers.Base"]
+      state: real_mouse
+  - type: DamageStateVisuals
+    states:
+      Alive:
+        Base: real_mouse
+      Critical:
+        Base: real_mouse_dead
+      Dead:
+        Base: real_mouse_dead
+  - type: Grammar
+    attributes:
+      proper: true
+      gender: female
+
+- type: entity
+  name: Puppy Ian
+  parent: MobCorgiPuppy
+  id: MobCorgiIanPup
+  description: Favourite puppy corgi. Awww.
+  components:
+  - type: Grammar
+    attributes:
+      proper: true
+      gender: male
+  - type: Butcherable # A puppy? You monster...
+    spawned:
+    - id: FoodMeatCorgi
+      amount: 2
+    - id: MaterialHideCorgi
+  - type: StealTarget
+    stealGroup: AnimalIan
+
+- type: entity
   name: Runtime
   parent: MobCat
   id: MobCatRuntime
@@ -92,6 +135,7 @@
   - type: NpcFactionMember
     factions:
       - PetsNT
+      - Cat # DeltaV
   - type: HTN
     rootTask:
       task: SimpleHostileCompound
@@ -103,6 +147,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalNamedCat
 
 - type: entity
   name: Exception
@@ -113,6 +159,7 @@
   - type: NpcFactionMember
     factions:
       - PetsNT
+      - Cat # DeltaV
   - type: Grammar
     attributes:
       proper: true
@@ -121,6 +168,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalNamedCat
 
 - type: entity
   name: Floppa
@@ -146,6 +195,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalNamedCat
 
 - type: entity
   name: Bandito
@@ -164,7 +215,7 @@
 
 - type: entity
   name: Bingus
-  parent: SimpleMobBase
+  parent: [SimpleMobBase, StripableInventoryBase]
   id: MobBingus
   description: Bingus my beloved...
   components:
@@ -189,12 +240,6 @@
   - type: Inventory
     speciesId: cat
     templateId: pet
-  - type: InventorySlots
-  - type: Strippable
-  - type: UserInterface
-    interfaces:
-    - key: enum.StrippingUiKey.Key
-      type: StrippableBoundUserInterface
   - type: DamageStateVisuals
     states:
       Alive:
@@ -222,10 +267,12 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalNamedCat
 
 - type: entity
   name: McGriff
-  parent: SimpleMobBase
+  parent: [SimpleMobBase, StripableInventoryBase]
   id: MobMcGriff
   description: This dog can tell something smells around here, and that something is CRIME!
   components:
@@ -250,12 +297,6 @@
   - type: Inventory
     speciesId: puppy
     templateId: pet
-  - type: InventorySlots
-  - type: Strippable
-  - type: UserInterface
-    interfaces:
-    - key: enum.StrippingUiKey.Key
-      type: StrippableBoundUserInterface
   - type: DamageStateVisuals
     states:
       Alive:
@@ -285,6 +326,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalMcGriff
 
 - type: entity
   name: Paperwork
@@ -322,7 +365,7 @@
 
 - type: entity
   name: Walter
-  parent: SimpleMobBase
+  parent: [SimpleMobBase, StripableInventoryBase]
   id: MobWalter
   description: He likes chems and treats. Walter.
   components:
@@ -347,12 +390,6 @@
   - type: Inventory
     speciesId: dog
     templateId: pet
-  - type: InventorySlots
-  - type: Strippable
-  - type: UserInterface
-    interfaces:
-    - key: enum.StrippingUiKey.Key
-      type: StrippableBoundUserInterface
   - type: DamageStateVisuals
     states:
       Alive:
@@ -382,6 +419,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalWalter
 
 - type: entity
   name: Morty
@@ -404,6 +443,50 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalMorty
+
+- type: entity
+  name: Morty
+  parent: MobPossumMorty
+  id: MobPossumMortyOld
+  suffix: Old sprite
+  components:
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Mobs/Animals/possum_old.rsi
+    layers:
+    - map: [ "enum.DamageStateVisualLayers.Base" ]
+      state: possum_old
+  - type: DamageStateVisuals
+    states:
+      Alive:
+        Base: possum_old
+      Dead:
+        Base: possum_dead_old
+
+- type: entity
+  name: Poppy # the Safety Possum
+  parent: MobPossumMorty
+  id: MobPossumPoppy
+  description: It's an opossum, a small scavenging marsupial. It's wearing appropriate personal protective equipment.
+  components:
+  - type: Grammar
+    attributes:
+      proper: true
+      gender: female
+  - type: Sprite
+    drawdepth: Mobs
+    sprite: Mobs/Animals/possum.rsi
+    layers:
+    - map: [ "enum.DamageStateVisualLayers.Base" ]
+      state: poppy
+  - type: DamageStateVisuals
+    states:
+      Alive:
+        Base: poppy
+      Dead:
+        Base: poppy_dead
 
 - type: entity
   name: Morticia
@@ -461,7 +544,7 @@
     interactFailureString: petting-failure-generic
     interactSuccessSpawn: EffectHearts
     interactSuccessSound:
-      path: /Audio/Animals/fox_squeak.ogg
+      collection: Fox
   - type: Butcherable
     spawned:
     - id: FoodMeat
@@ -476,6 +559,8 @@
     tags:
     - CannotSuicide
     - VimPilot
+  - type: StealTarget
+    stealGroup: AnimalRenault
 
 - type: entity
   name: Hamlet
@@ -487,14 +572,22 @@
     drawdepth: SmallMobs
     sprite: Mobs/Pets/hamlet.rsi
     layers:
-    - map: ["enum.DamageStateVisualLayers.Base"]
+    - map: ["enum.DamageStateVisualLayers.Base", "movement"]
       state: hamster-0
+  - type: SpriteMovement
+    movementLayers:
+      movement:
+        state: hamster-moving-0
+    noMovementLayers:
+      movement:
+        state: hamster-0
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
     allowMovement: true
     name: ghost-role-information-hamlet-name
     description: ghost-role-information-hamlet-description
+    rules: ghost-role-information-nonantagonist-rules
   - type: GhostTakeoverAvailable
   - type: InteractionPopup
     successChance: 1
@@ -516,6 +609,11 @@
     - CannotSuicide
     - Hamster
     - VimPilot
+    - ChefPilot
+  - type: FlavorProfile
+    flavors:
+    - meaty
+    - sadness
 
 - type: entity
   name: Shiva
@@ -523,6 +621,18 @@
   id: MobSpiderShiva
   description: The first defender of the station.
   components:
+  - type: GhostRole # DeltaV
+    makeSentient: true
+    allowSpeech: true
+    allowMovement: true
+    name: ghost-role-information-Shiva-name
+    description: ghost-role-information-Shiva-description
+    rules: ghost-role-information-Shiva-rules
+    requirements: # Delta V - No raiders
+    - !type:DepartmentTimeRequirement
+      department: Security
+      time: 14400 # DeltaV - 4 hours
+  - type: GhostTakeoverAvailable # DeltaV
   - type: InteractionPopup
     successChance: 0.5 # spider is mean
     interactSuccessString: petting-success-tarantula
@@ -536,41 +646,31 @@
   - type: Sprite
     drawdepth: Mobs
     layers:
-    - map: ["enum.DamageStateVisualLayers.Base"]
+    - map: ["enum.DamageStateVisualLayers.Base", "movement"]
       state: shiva
       sprite: Mobs/Pets/shiva.rsi
+  - type: SpriteMovement
+    movementLayers:
+      movement:
+        state: shiva-moving
+    noMovementLayers:
+      movement:
+        state: shiva
   - type: HTN
     rootTask:
       task: SimpleHostileCompound
   - type: Physics
-  - type: Fixtures
-    fixtures:
-      fix1:
-        shape:
-          !type:PhysShapeCircle
-          radius: 0.35
-        density: 130
-        mask:
-        - MobMask
-        layer:
-        - MobLayer
   - type: DamageStateVisuals
     states:
       Alive:
         Base: shiva
       Dead:
         Base: shiva_dead
-  - type: Butcherable
-    spawned:
-    - id: FoodMeatSpider
-      amount: 2
-  - type: CombatMode
   - type: MobThresholds
     thresholds:
       0: Alive
       150: Dead
   - type: MeleeWeapon
-    hidden: true
     angle: 0
     animation: WeaponArcBite
     soundHit:
@@ -579,11 +679,6 @@
       types:
         Piercing: 8
         Poison: 8
-  - type: ReplacementAccent
-    accent: xeno
-  - type: NoSlip
-  - type: Spider
-  - type: IgnoreSpiderWeb
   - type: Grammar
     attributes:
       proper: true
@@ -592,6 +687,10 @@
     tags:
     - CannotSuicide
     - VimPilot
+    - DoorBumpOpener
+    - FootstepSound
+  - type: StealTarget
+    stealGroup: AnimalSecurity #DeltaV - Adjusts because we have multiple possible sec animals
 
 - type: entity
   name: Willow
@@ -619,6 +718,7 @@
     prob: 0.25
     name: ghost-role-information-willow-name
     description: ghost-role-information-willow-description
+    rules: ghost-role-information-nonantagonist-rules
   - type: GhostTakeoverAvailable
   - type: Loadout
     prototypes: [ BoxingKangarooGear ]
@@ -679,6 +779,10 @@
       types:
         Blunt: 1
         Caustic: 1
+  - type: MultiHandedItem
+  - type: Item
+    sprite: Mobs/Pets/smile.rsi
+    size: Huge
   - type: SentienceTarget
     flavorKind: station-event-random-sentience-flavor-slime
   - type: MobPrice
@@ -686,6 +790,7 @@
   - type: GhostRole
     name: ghost-role-information-smile-name
     description: ghost-role-information-smile-description
+    rules: ghost-role-information-nonantagonist-rules
   - type: Grammar
     attributes:
       proper: true
@@ -704,6 +809,11 @@
     allowMovement: true
     name: ghost-role-information-punpun-name
     description: ghost-role-information-punpun-description
+    rules: ghost-role-information-nonantagonist-rules
+    requirements: # Delta V - No raiders
+    - !type:RoleTimeRequirement
+      role: JobBartender
+      time: 14400 # Delta V - 4 hours
   - type: GhostTakeoverAvailable
   - type: Butcherable
     butcheringType: Spike
@@ -717,9 +827,37 @@
     - CannotSuicide
     - DoorBumpOpener
     - VimPilot
+    - AnomalyHost
   - type: Loadout
     prototypes: [ MobMonkeyGear ]
   - type: Grammar
     attributes:
       proper: true
       gender: male
+
+- type: entity
+  name: Tropico
+  parent: MobCrab
+  id: MobCrabAtmos
+  description: The noble and stalwart defender of Atmosia. Viva!
+  components:
+#  - type: GhostRole
+#    prob: 1
+#    makeSentient: true
+#    allowSpeech: true
+#    allowMovement: true
+#    name: ghost-role-information-tropico-name
+#    description: ghost-role-information-tropico-description
+#    rules: ghost-role-information-nonantagonist-rules
+#  - type: GhostTakeoverAvailable
+  - type: Tag
+    tags:
+    - VimPilot
+    - CannotSuicide
+  - type: Grammar
+    attributes:
+      proper: true
+      gender: male
+#  - type: AlwaysRevolutionaryConvertible
+  - type: StealTarget
+    stealGroup: AnimalTropico

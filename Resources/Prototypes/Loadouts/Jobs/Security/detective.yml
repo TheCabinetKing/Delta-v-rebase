@@ -1,0 +1,78 @@
+# Head
+- type: loadout
+  id: DetectiveFedora
+  equipment:
+    head: ClothingHeadHatFedoraBrown
+
+- type: loadout
+  id: DetectiveFedoraGrey
+  equipment:
+    head: ClothingHeadHatFedoraGrey
+
+- type: loadout # DeltaV
+  id: DetBeret
+  equipment:
+    head: ClothingHeadHatBeretDet
+
+# Neck
+- type: loadout
+  id: DetectiveTie
+  equipment:
+    neck: ClothingNeckTieDet
+
+# Jumpsuit
+- type: loadout
+  id: DetectiveJumpsuit
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitDetective
+
+- type: loadout
+  id: DetectiveJumpskirt
+  equipment:
+    jumpsuit: ClothingUniformJumpskirtDetective
+
+- type: loadout
+  id: NoirJumpsuit
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitDetectiveGrey
+
+- type: loadout
+  id: NoirJumpskirt
+  equipment:
+    jumpsuit: ClothingUniformJumpskirtDetectiveGrey
+
+- type: loadout # DeltaV
+  id: ForensicSpecJumpsuit
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitForensicSpec
+
+- type: loadout # DeltaV
+  id: ForensicSpecJumpskirt
+  equipment:
+    jumpsuit: ClothingUniformJumpskirtForensicSpec
+
+- type: loadout # DeltaV
+  id: ForensicSpecTurtlesuit
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitDetTurtle
+
+- type: loadout # DeltaV
+  id: ForensicSpecTurtleskirt
+  equipment:
+    jumpsuit: ClothingUniformJumpskirtDetTurtle
+
+# OuterClothing
+- type: loadout
+  id: DetectiveArmorVest
+  equipment:
+    outerClothing: ClothingOuterVestDetective
+
+- type: loadout
+  id: DetectiveCoat
+  equipment:
+    outerClothing: ClothingOuterCoatDetectiveLoadout
+
+- type: loadout # DeltaV
+  id: StasecWinterCoatDet
+  equipment:
+    outerClothing: ClothingOuterCoatStasecDet

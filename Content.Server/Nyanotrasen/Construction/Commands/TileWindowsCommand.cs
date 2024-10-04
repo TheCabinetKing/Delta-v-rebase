@@ -5,7 +5,9 @@ using Content.Shared.Tag;
 using Robust.Server.Player;
 using Robust.Shared.Console;
 using Robust.Shared.Map;
+using Robust.Shared.Map.Components;
 using Robust.Shared.Maths;
+using Robust.Shared.Player;
 
 namespace Content.Server.Construction.Commands
 {
@@ -23,7 +25,7 @@ namespace Content.Server.Construction.Commands
 
         public void Execute(IConsoleShell shell, string argStr, string[] args)
         {
-            var player = shell.Player as IPlayerSession;
+            var player = shell.Player as ICommonSession;
             var entityManager = IoCManager.Resolve<IEntityManager>();
             EntityUid? gridId;
 
@@ -52,8 +54,7 @@ namespace Content.Server.Construction.Commands
                     return;
             }
 
-            var mapManager = IoCManager.Resolve<IMapManager>();
-            if (!mapManager.TryGetGrid(gridId, out var grid))
+            if (!entityManager.TryGetComponent<MapGridComponent>(gridId, out var grid))
             {
                 shell.WriteLine($"No grid exists with id {gridId}");
                 return;
@@ -70,7 +71,8 @@ namespace Content.Server.Construction.Commands
             var underplating = tileDefinitionManager[TilePrototypeId];
             var underplatingTile = new Tile(underplating.TileId);
             var changed = 0;
-            foreach (var child in entityManager.GetComponent<TransformComponent>(grid.Owner).ChildEntities)
+            var children = entityManager.GetComponent<TransformComponent>(grid.Owner).ChildEnumerator;
+            while (children.MoveNext(out var child))
             {
                 if (!entityManager.EntityExists(child))
                 {

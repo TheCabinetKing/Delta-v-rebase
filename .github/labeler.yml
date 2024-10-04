@@ -1,12 +1,44 @@
-﻿"Changes: Sprites":
-- '**/*.rsi/*.png'
+"Changes: C#":
+- changed-files:
+  - any-glob-to-any-file: "**/*.cs"
+
+"Changes: Documentation":
+- changed-files:
+  - any-glob-to-any-file:
+    - "**/*.xml"
+    - "**/*.md"
+
+"Changes: Localization":
+- changed-files:
+  - any-glob-to-any-file:
+    - 'Resources/Locale/**/*.ftl'
 
 "Changes: Map":
-- 'Resources/Maps/*.yml'
-- 'Resources/Prototypes/Maps/*.yml'
+- changed-files:
+  - any-glob-to-any-file:
+    - "Resources/Maps/**/*.yml"
+    - "Resources/Prototypes/Maps/**/*.yml"
+
+"Changes: Sprite":
+- changed-files:
+  - any-glob-to-any-file:
+    - "**/*.rsi/*.png"
+    - "**/*.rsi/*.json"
 
 "Changes: UI":
-- '**/*.xaml*'
+- changed-files:
+  - any-glob-to-any-file:
+    - "**/*.xaml*"
 
-"No C#":
-- all: ["!**/*.cs"]
+"Changes: YML":
+- changed-files:
+  - any-glob-to-any-file:
+    - "**/*.yml"
+
+"Changes: Shaders":
+- changed-files:
+  - any-glob-to-any-file: '**/*.swsl'
+
+"Changes: Audio":
+- changed-files:
+  - any-glob-to-any-file: '**/*.ogg'

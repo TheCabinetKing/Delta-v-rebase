@@ -1,148 +1,217 @@
 # Harpy
 - type: emote
-  id: Boom
+  id: HarpyHonk
+  name: delta-chat-emote-name-honk
   category: Vocal
-  chatMessages: [booms.]
-  chatTriggers:
-    - boom.
-    - booms.
-    - booms!
-    - booming.
-    - boomed.
-
-- type: emote
-  id: HonkHarpy
-  category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [honks.]
   chatTriggers:
-    - honk.
-    - honks.
-    - honks!
-    - honking.
-    - honked.
+    - honk
+    - honks
+    - honking
+    - honked
 
 - type: emote
-  id: Ring
+  id: HarpyRing
+  name: delta-chat-emote-name-ring
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [rings.]
   chatTriggers:
-    - ring.
-    - rings.
-    - rings!
-    - ringing.
-    - ringed.
+    - ring
+    - rings
+    - ringing
+    - ringed
+    - rang
 
 - type: emote
-  id: Pew
+  id: HarpyPew
+  name: delta-chat-emote-name-pew
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [pews.]
   chatTriggers:
-    - pew.
-    - pews.
-    - pew!
+    - pew
+    - pews
+    - pewpew
 
 - type: emote
-  id: Bang
+  id: HarpyBang
+  name: delta-chat-emote-name-bang
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [bangs.]
   chatTriggers:
-    - bangs.
-    - bang.
-    - bang!
-    - banging.
-    - banged.
+    - bang
+    - bangs
+    - banging
+    - banged
 
 - type: emote
-  id: Beep
+  id: HarpyBeep
+  name: delta-chat-emote-name-beep
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [beeps.]
   chatTriggers:
-    - beeps.
-    - beep.
-    - beep!
-    - beeping.
-    - beeped.
+    - beep
+    - beeps
+    - beeping
+    - beeped
 
 - type: emote
-  id: Rev
+  id: HarpyRev
+  name: delta-chat-emote-name-rev
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [revs.]
   chatTriggers:
-    - revs.
-    - rev.
-    - rev!
+    - rev
+    - revs
     - revving
     - revved
 
 - type: emote
-  id: Click
+  id: HarpyCaw
+  name: delta-chat-emote-name-caw
   category: Vocal
-  chatMessages: [clicks.]
-  chatTriggers:
-    - clicks.
-    - click.
-    - click!
-    - clicking.
-    - clicked.
-
-- type: emote
-  id: Caw
-  category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [caws.]
   chatTriggers:
-    - caws.
-    - caw.
-    - caw!
+    - caw
+    - caws
     - cawing
     - cawed
-
-- type: emote
-  id: Chirp
-  category: Vocal
-  chatMessages: [chirps.]
-  chatTriggers:
-    - chirps.
-    - chirp.
-    - chirp!
-    - chirping.
-    - chirped.
 
 #Vulpkanin
 - type: emote
   id: Bark
+  name: delta-chat-emote-name-bark
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [barks.]
   chatTriggers:
-    - bark.
-    - bark!
-    - barks.
-    - barks!
-    - barked.
-    - barked!
-    - barking.
+    - bark
+    - barks
+    - barked
+    - barking
 
 - type: emote
   id: Snarl
+  name: delta-chat-emote-name-snarl
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [snarls.]
   chatTriggers:
-    - snarl.
-    - snarl!
-    - snarls.
-    - snarls!
-    - snarled.
-    - snarled!
-    - snarling.
+    - snarl
+    - snarls
+    - snarled
+    - snarling
 
 - type: emote
   id: Whine
+  name: delta-chat-emote-name-whine
   category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
   chatMessages: [whines.]
   chatTriggers:
-    - whine.
-    - whine!
-    - whines.
-    - whines!
-    - whined.
-    - whined!
-    - whining.
+    - whine
+    - whines
+    - whined
+    - whining
+
+- type: emote
+  id: Howl
+  name: delta-chat-emote-name-howl
+  category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
+  chatMessages: [howls.]
+  chatTriggers:
+    - howl
+    - howls
+    - howling
+    - howled
+
+- type: emote
+  id: Awoo
+  name: delta-chat-emote-name-awoo
+  category: Vocal
+  available: false
+  whitelist:
+    components:
+    - Vocal
+  blacklist:
+    components:
+    - BorgChasis
+  chatMessages: [awoos.]
+  chatTriggers:
+    - awoo
+    - awoos
+    - awooing
+    - awooed

@@ -25,17 +25,18 @@ namespace Content.IntegrationTests.Tests
             var server = pair.Server;
             var entManager = server.ResolveDependency<IEntityManager>();
             var mapLoader = entManager.System<MapLoaderSystem>();
+            var mapSystem = entManager.System<SharedMapSystem>();
             var mapManager = server.ResolveDependency<IMapManager>();
             var cfg = server.ResolveDependency<IConfigurationManager>();
             Assert.That(cfg.GetCVar(CCVars.GridFill), Is.False);
 
             await server.WaitPost(() =>
             {
-                var mapId0 = mapManager.CreateMap();
+                mapSystem.CreateMap(out var mapId0);
                 // TODO: Properly find the "main" station grid.
-                var grid0 = mapManager.CreateGrid(mapId0);
+                var grid0 = mapManager.CreateGridEntity(mapId0);
                 mapLoader.Save(grid0.Owner, "save load save 1.yml");
-                var mapId1 = mapManager.CreateMap();
+                mapSystem.CreateMap(out var mapId1);
                 EntityUid grid1 = default!;
 #pragma warning disable NUnit2045
                 Assert.That(mapLoader.TryLoad(mapId1, "save load save 1.yml", out var roots, new MapLoadOptions() { LoadMap = false }), $"Failed to load test map {TestMap}");
@@ -89,28 +90,28 @@ namespace Content.IntegrationTests.Tests
             await pair.CleanReturnAsync();
         }
 
-        private const string TestMap = "Maps/bagel.yml";
+        private const string TestMap = "Maps/pebble.yml";
 
         /// <summary>
         ///     Loads the default map, runs it for 5 ticks, then assert that it did not change.
         /// </summary>
         [Test]
-        public async Task LoadSaveTicksSaveBagel()
+        public async Task LoadSaveTicksSavePebble()
         {
             await using var pair = await PoolManager.GetServerClient();
             var server = pair.Server;
             var mapLoader = server.ResolveDependency<IEntitySystemManager>().GetEntitySystem<MapLoaderSystem>();
             var mapManager = server.ResolveDependency<IMapManager>();
+            var mapSystem = server.System<SharedMapSystem>();
 
             MapId mapId = default;
             var cfg = server.ResolveDependency<IConfigurationManager>();
             Assert.That(cfg.GetCVar(CCVars.GridFill), Is.False);
 
-            // Load bagel.yml as uninitialized map, and save it to ensure it's up to date.
+            // Load pebble.yml as uninitialized map, and save it to ensure it's up to date.
             server.Post(() =>
             {
-                mapId = mapManager.CreateMap();
-                mapManager.AddUninitializedMap(mapId);
+                mapSystem.CreateMap(out mapId, runMapInit: false);
                 mapManager.SetMapPaused(mapId, true);
                 Assert.That(mapLoader.TryLoad(mapId, TestMap, out _), $"Failed to load test map {TestMap}");
                 mapLoader.SaveMap(mapId, "load save ticks save 1.yml");
@@ -173,16 +174,17 @@ namespace Content.IntegrationTests.Tests
         /// <remarks>
         ///     Should ensure that entities do not perform randomization prior to initialization and should prevents
         ///     bugs like the one discussed in github.com/space-wizards/RobustToolbox/issues/3870. This test is somewhat
-        ///     similar to <see cref="LoadSaveTicksSaveBagel"/> and <see cref="SaveLoadSave"/>, but neither of these
+        ///     similar to <see cref="LoadSaveTicksSavePebble"/> and <see cref="SaveLoadSave"/>, but neither of these
         ///     caught the mentioned bug.
         /// </remarks>
         [Test]
-        public async Task LoadTickLoadBagel()
+        public async Task LoadTickLoadPebble()
         {
             await using var pair = await PoolManager.GetServerClient();
             var server = pair.Server;
 
-            var mapLoader = server.ResolveDependency<IEntitySystemManager>().GetEntitySystem<MapLoaderSystem>();
+            var mapLoader = server.System<MapLoaderSystem>();
+            var mapSystem = server.System<SharedMapSystem>();
             var mapManager = server.ResolveDependency<IMapManager>();
             var userData = server.ResolveDependency<IResourceManager>().UserData;
             var cfg = server.ResolveDependency<IConfigurationManager>();
@@ -197,8 +199,7 @@ namespace Content.IntegrationTests.Tests
             // Load & save the first map
             server.Post(() =>
             {
-                mapId = mapManager.CreateMap();
-                mapManager.AddUninitializedMap(mapId);
+                mapSystem.CreateMap(out mapId, runMapInit: false);
                 mapManager.SetMapPaused(mapId, true);
                 Assert.That(mapLoader.TryLoad(mapId, TestMap, out _), $"Failed to load test map {TestMap}");
                 mapLoader.SaveMap(mapId, fileA);
@@ -217,8 +218,7 @@ namespace Content.IntegrationTests.Tests
             server.Post(() =>
             {
                 mapManager.DeleteMap(mapId);
-                mapManager.CreateMap(mapId);
-                mapManager.AddUninitializedMap(mapId);
+                mapSystem.CreateMap(out mapId, runMapInit: false);
                 mapManager.SetMapPaused(mapId, true);
                 Assert.That(mapLoader.TryLoad(mapId, TestMap, out _), $"Failed to load test map {TestMap}");
                 mapLoader.SaveMap(mapId, fileB);

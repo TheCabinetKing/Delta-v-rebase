@@ -6,12 +6,13 @@
   id: MobPurpleSnakeGhost
   components:
   - type: GhostTakeoverAvailable
+  - type: GhostRole
     allowMovement: true
     allowSpeech: false
     makeSentient: true
     name: salvage snake
     description: You are a salvage snake hunting for a meal.
-    rules: You are an antagonist, kill!
+    rules: deltav-ghost-role-information-salvageantag-rules # DeltaV salvage mob rules
   - type: SalvageMobRestrictions
 
 - type: entity
@@ -19,12 +20,13 @@
   id: MobSmallPurpleSnakeGhost
   components:
   - type: GhostTakeoverAvailable
+  - type: GhostRole
     allowMovement: true
     allowSpeech: false
     makeSentient: true
     name: salvage snake
     description: You are a salvage snake hunting for a meal.
-    rules: You are an antagonist, kill!
+    rules: deltav-ghost-role-information-salvageantag-rules # DeltaV salvage mob rules
   - type: SalvageMobRestrictions
 
 # Delta V variants of Xenos to allow ghost takeover again
@@ -35,6 +37,15 @@
   parent: MobXeno
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable
 
 - type: entity
@@ -43,6 +54,15 @@
   id: MobXenoPraetorian
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable
 
 - type: entity
@@ -51,6 +71,15 @@
   id: MobXenoDrone
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable
 
 - type: entity
@@ -59,6 +88,15 @@
   id: MobXenoQueen
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable
 
 - type: entity
@@ -67,6 +105,15 @@
   id: MobXenoRavager
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable
 
 - type: entity
@@ -75,17 +122,32 @@
   id: MobXenoRunner
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable
 
 - type: entity
   name: Rouny
-  parent: MobXenoRunner
+  parent: MobXenoRounyNPC
   id: MobXenoRouny
   components:
-  - type: Sprite
-    drawdepth: Mobs
-    sprite: Mobs/Aliens/Xenos/rouny.rsi
-    offset: 0,0.6
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
+  - type: GhostTakeoverAvailable
 
 - type: entity
   name: Spitter
@@ -93,4 +155,13 @@
   id: MobXenoSpitter
   suffix: Player
   components:
+  - type: GhostRole
+    allowMovement: true
+    allowSpeech: true
+    makeSentient: true
+    name: ghost-role-information-xeno-name
+    description: ghost-role-information-xeno-description
+    rules: ghost-role-information-xeno-rules
+    raffle:
+      settings: default
   - type: GhostTakeoverAvailable

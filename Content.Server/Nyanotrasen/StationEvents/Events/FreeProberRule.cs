@@ -1,19 +1,19 @@
-using Robust.Shared.Map;
-using Robust.Shared.Random;
-using Content.Server.GameTicking.Rules.Components;
 using Content.Server.Power.Components;
+using Content.Server.Psionics.Glimmer;
 using Content.Server.Station.Systems;
 using Content.Server.StationEvents.Components;
-using Content.Server.Psionics.Glimmer;
+using Content.Server.StationEvents.Events;
 using Content.Shared.Construction.EntitySystems;
+using Content.Shared.GameTicking.Components;
 using Content.Shared.Psionics.Glimmer;
+using Robust.Shared.Map.Components;
+using Robust.Shared.Random;
 
-namespace Content.Server.StationEvents.Events;
+namespace Content.Server.Nyanotrasen.StationEvents.Events;
 
 internal sealed class FreeProberRule : StationEventSystem<FreeProberRuleComponent>
 {
     [Dependency] private readonly IRobustRandom _robustRandom = default!;
-    [Dependency] private readonly IMapManager _mapManager = default!;
     [Dependency] private readonly AnchorableSystem _anchorable = default!;
     [Dependency] private readonly GlimmerSystem _glimmerSystem = default!;
     [Dependency] private readonly StationSystem _stationSystem = default!;
@@ -58,7 +58,7 @@ internal sealed class FreeProberRule : StationEventSystem<FreeProberRuleComponen
 
                 var coordinates = xform.Coordinates;
                 var gridUid = xform.GridUid;
-                if (!_mapManager.TryGetGrid(gridUid, out var grid))
+                if (CompOrNull<MapGridComponent>(gridUid) is not {} grid)
                     continue;
 
                 var tileIndices = grid.TileIndicesFor(coordinates);

@@ -1,8 +1,8 @@
+using Content.Shared.Alert;
 using Content.Shared.Atmos;
 using Content.Shared.Damage;
 using Content.Shared.FixedPoint;
-using Robust.Shared.Physics;
-using Robust.Shared.Physics.Components;
+using Robust.Shared.Prototypes;
 
 namespace Content.Server.Temperature.Components;
 
@@ -14,6 +14,9 @@ namespace Content.Server.Temperature.Components;
 [RegisterComponent]
 public sealed partial class TemperatureComponent : Component
 {
+    /// <summary>
+    /// Surface temperature which is modified by the environment.
+    /// </summary>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public float CurrentTemperature = Atmospherics.T20C;
 
@@ -47,19 +50,6 @@ public sealed partial class TemperatureComponent : Component
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public float AtmosTemperatureTransferEfficiency = 0.1f;
 
-    [ViewVariables] public float HeatCapacity
-    {
-        get
-        {
-            if (IoCManager.Resolve<IEntityManager>().TryGetComponent<PhysicsComponent>(Owner, out var physics) && physics.FixturesMass != 0)
-            {
-                return SpecificHeat * physics.FixturesMass;
-            }
-
-            return Atmospherics.MinimumHeatCapacity;
-        }
-    }
-
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public DamageSpecifier ColdDamage = new();
 
@@ -71,7 +61,7 @@ public sealed partial class TemperatureComponent : Component
     /// </summary>
     /// <remarks>
     /// Okay it genuinely reaches this basically immediately for a plasma fire.
-    /// </summary>
+    /// </remarks>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
     public FixedPoint2 DamageCap = FixedPoint2.New(8);
 
@@ -79,5 +69,11 @@ public sealed partial class TemperatureComponent : Component
     /// Used to keep track of when damage starts/stops. Useful for logs.
     /// </summary>
     [DataField]
-    public bool TakingDamage = false;
+    public bool TakingDamage;
+
+    [DataField]
+    public ProtoId<AlertPrototype> HotAlert = "Hot";
+
+    [DataField]
+    public ProtoId<AlertPrototype> ColdAlert = "Cold";
 }

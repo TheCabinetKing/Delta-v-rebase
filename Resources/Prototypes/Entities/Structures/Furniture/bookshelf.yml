@@ -13,11 +13,11 @@
       - map: ["enum.StorageFillLayers.Fill"]
   - type: Appearance
   - type: StorageFillVisualizer
-    maxFillLevels: 20
+    maxFillLevels: 21
     fillBaseName: book
   - type: Damageable
     damageModifierSet: Wood
-    damageContainer: Inorganic
+    damageContainer: StructuralInorganic
   - type: Destructible
     thresholds:
     - trigger:
@@ -26,7 +26,7 @@
       behaviors:
       - !type:PlaySoundBehavior
         sound:
-          path: /Audio/Effects/woodhit.ogg
+          collection: WoodDestroyHeavy
       - !type:SpawnEntitiesBehavior
         spawn:
           MaterialWoodPlank:
@@ -47,18 +47,14 @@
   - type: Pullable
   - type: Occluder
   - type: Storage
-    capacity: 200
-    whitelist:
-      tags:
-        - Document
-        - Folder
-        - Write
-        - Book
-        - Spellbook
+    grid:
+    - 0,0,5,1 # DeltaV, make it 2 rows of 6 instead of a giant block
+    - 0,3,5,4
+    #maxItemSize: Normal # DeltaV: removed whitelist and max item size
   - type: UserInterface
     interfaces:
-    - key: enum.StorageUiKey.Key
-      type: StorageBoundUserInterface
+      enum.StorageUiKey.Key:
+        type: StorageBoundUserInterface
   - type: InteractionOutline
   - type: ContainerContainer
     containers:
@@ -66,3 +62,4 @@
   - type: Construction
     graph: Bookshelf
     node: bookshelf
+  - type: BlockWeather

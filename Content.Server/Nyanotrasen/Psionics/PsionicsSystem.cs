@@ -11,7 +11,10 @@ using Content.Server.Chat.Systems;
 using Content.Server.Electrocution;
 using Content.Server.NPC.Components;
 using Content.Server.NPC.Systems;
+using Content.Shared.NPC.Components;
+using Content.Shared.NPC.Systems;
 using Robust.Shared.Audio;
+using Robust.Shared.Audio.Systems;
 using Robust.Shared.Player;
 using Robust.Shared.Configuration;
 using Robust.Shared.Random;
@@ -27,8 +30,9 @@ namespace Content.Server.Psionics
         [Dependency] private readonly MindSwapPowerSystem _mindSwapPowerSystem = default!;
         [Dependency] private readonly GlimmerSystem _glimmerSystem = default!;
         [Dependency] private readonly ChatSystem _chat = default!;
-        [Dependency] private readonly NpcFactionSystem _npcFactonSystem = default!;
+        [Dependency] private readonly NpcFactionSystem _faction = default!;
         [Dependency] private readonly IConfigurationManager _cfg = default!;
+        [Dependency] private readonly SharedAudioSystem _audio = default!;
 
         /// <summary>
         /// Unfortunately, since spawning as a normal role and anything else is so different,
@@ -69,7 +73,7 @@ namespace Content.Server.Psionics
             {
                 if (HasComp<PsionicComponent>(entity))
                 {
-                    SoundSystem.Play("/Audio/Effects/lightburn.ogg", Filter.Pvs(entity), entity);
+                    _audio.PlayPvs("/Audio/Effects/lightburn.ogg", entity);
                     args.ModifiersList.Add(component.Modifiers);
                     if (_random.Prob(component.DisableChance))
                         _statusEffects.TryAddStatusEffect(entity, "PsionicsDisabled", TimeSpan.FromSeconds(10), true, "PsionicsDisabled");
@@ -94,10 +98,10 @@ namespace Content.Server.Psionics
             if (!TryComp<NpcFactionMemberComponent>(uid, out var factions))
                 return;
 
-            if (_npcFactonSystem.ContainsFaction(uid, "GlimmerMonster", factions))
+            if (_faction.IsMember((uid, factions), "GlimmerMonster"))
                 return;
 
-            _npcFactonSystem.AddFaction(uid, "PsionicInterloper");
+            _faction.AddFaction((uid, factions), "PsionicInterloper");
         }
 
         private void OnRemove(EntityUid uid, PsionicComponent component, ComponentRemove args)
@@ -105,7 +109,7 @@ namespace Content.Server.Psionics
             if (!TryComp<NpcFactionMemberComponent>(uid, out var factions))
                 return;
 
-            _npcFactonSystem.RemoveFaction(uid, "PsionicInterloper");
+            _faction.RemoveFaction((uid, factions), "PsionicInterloper");
         }
 
         private void OnStamHit(EntityUid uid, AntiPsionicWeaponComponent component, StaminaMeleeHitEvent args)
@@ -124,21 +128,31 @@ namespace Content.Server.Psionics
             args.FlatModifier += component.PsychicStaminaDamage;
         }
 
-        public void RollPsionics(EntityUid uid, PotentialPsionicComponent component, bool applyGlimmer = true, float multiplier = 1f)
+        /// <summary>
+        /// Makes the entity psionic if it is possible.
+        /// Ignores rolling and rerolling prevention.
+        /// </summary>
+        public bool TryMakePsionic(Entity<PotentialPsionicComponent> ent)
         {
-            if (HasComp<PsionicComponent>(uid))
-                return;
+            if (HasComp<PsionicComponent>(ent))
+                return false;
 
             if (!_cfg.GetCVar(CCVars.PsionicRollsEnabled))
-                return;
+                return false;
+
+            var warn = CompOrNull<PsionicBonusChanceComponent>(ent)?.Warn ?? true;
+            _psionicAbilitiesSystem.AddPsionics(ent, warn);
+            return true;
+        }
+
+        public void RollPsionics(EntityUid uid, PotentialPsionicComponent component, bool applyGlimmer = true, float multiplier = 1f)
+        {
 
             var chance = component.Chance;
-            var warn = true;
             if (TryComp<PsionicBonusChanceComponent>(uid, out var bonus))
             {
                 chance *= bonus.Multiplier;
                 chance += bonus.FlatBonus;
-                warn = bonus.Warn;
             }
 
             if (applyGlimmer)
@@ -149,7 +163,7 @@ namespace Content.Server.Psionics
             chance = Math.Clamp(chance, 0, 1);
 
             if (_random.Prob(chance))
-                _psionicAbilitiesSystem.AddPsionics(uid, warn);
+                TryMakePsionic((uid, component));
         }
 
         public void RerollPsionics(EntityUid uid, PotentialPsionicComponent? psionic = null, float bonusMuliplier = 1f)

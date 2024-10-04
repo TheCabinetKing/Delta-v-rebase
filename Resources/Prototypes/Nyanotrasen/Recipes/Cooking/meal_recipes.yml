@@ -26,7 +26,7 @@
   solids:
     FoodSnackBoritos: 1
     FoodCheeseSlice: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
     FoodMeatMeatball: 1
 
 # Base ingredients: Should be moved out of microwave as soon as possible.
@@ -49,6 +49,7 @@
     FoodCabbage: 1
     FoodOnionRedSlice: 1
     FoodTomato: 1
+    FoodBowlBig: 1
 
 # Entrees
 
@@ -62,7 +63,7 @@
   solids:
     FoodTofuSlice: 2
     FoodOnionSlice: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
     FoodCarrot: 1
     FoodCheeseCurds: 1
 
@@ -79,6 +80,29 @@
     PoppySeeds: 1
 
 - type: microwaveMealRecipe
+  id: RecipeMothEngineFodder
+  name: engine fodder recipe
+  result: FoodMothEngineFodder
+  time: 30
+  solids:
+    FoodMothToastedSeeds: 1
+    FoodSnackChips: 1
+    FoodSnackCnDs: 1
+    FoodSnackPopcorn: 1
+
+- type: microwaveMealRecipe
+  id: RecipeMothFueljackLunch
+  name: fueljack lunch recipe
+  result: FoodMothFueljackLunch
+  time: 15
+  solids:
+    FoodCheeseSlice: 1
+    FoodCabbage: 1
+    FoodChiliPepper: 1
+    FoodPotato: 1
+    FoodOnionSlice: 2
+
+- type: microwaveMealRecipe
   id: RecipeMothChiliCabbageWrap
   name: sweet chili cabbage wrap recipe
   result: FoodMothChiliCabbageWrap
@@ -88,7 +112,7 @@
   solids:
     FoodCheeseSlice: 1 #Grilled cheese slice
     FoodMothSaladBase: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
     FoodCabbage: 1
 
 - type: microwaveMealRecipe
@@ -119,7 +143,7 @@
     FoodRiceBoiled: 1
     FoodPotato: 2
     FoodCabbage: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
     #Herbs: 1
 
 - type: microwaveMealRecipe
@@ -147,10 +171,11 @@
   name: buttered baked corn recipe
   result: FoodMothButteredBakedCorn
   time: 5
-  reagents:
-    Butter: 5
+  # reagents: # Whenever we can actually melt butter
+  #   Butter: 5
   solids:
     FoodMothBakedCorn: 1
+    FoodButter: 1
 
 - type: microwaveMealRecipe
   id: RecipeMothMozzarellaSticks
@@ -170,9 +195,19 @@
   time: 15
   reagents:
     TomatoSauce: 10
+    Cornmeal: 5
   solids:
     FoodDonkpocket: 1 #macncheese donk
-    FoodCorn: 1 #CornMeal
+
+- type: microwaveMealRecipe
+  id: RecipeFishChips
+  name: fish and chips recipe
+  result: FoodMealFishChips
+  time: 15
+  solids:
+    FoodDough: 1
+    FoodPotato: 1
+    FoodMeatFish: 1
 
 # Soups and stews
 
@@ -199,7 +234,7 @@
   reagents:
     Milk: 5
     Flour: 5
-    Butter: 5
+    Cream: 5 # Butter when it gets meltable
   solids:
     FoodBowlBig: 1
     FoodCheeseSlice: 1
@@ -273,7 +308,7 @@
   solids:
     FoodBowlBig: 1
     FoodTofuSlice: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
     #FoodYogurt: 1 #Milk and Cream placeholder
 
 - type: microwaveMealRecipe
@@ -283,7 +318,7 @@
   time: 10
   solids:
     FoodRiceBoiled: 1
-    FoodMealFriedegg: 2
+    FoodEgg: 2 #FoodMealFriedegg when we can actually fry eggs buh
     FoodMeatCutlet: 1 #FoodMeatBacon when it's actually findable
 
 - type: microwaveMealRecipe
@@ -304,7 +339,7 @@
   time: 10
   reagents:
     Milk: 5
-    Butter: 5
+    Cream: 5 # Butter when it's meltable
   solids:
     FoodMothCornmealPorridge: 1
     FoodCurdCheese: 1
@@ -334,7 +369,7 @@
   solids:
     FoodBowlBig: 1
     FoodTomato: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
 
 # Salads: These should be moved out of the microwave as soon as possible
 
@@ -358,7 +393,6 @@
   reagents:
     Vinaigrette: 5
   solids:
-    FoodBowlBig: 1
     FoodMothSaladBase: 1
     FoodCarrot: 1
     FoodBreadPlainSlice: 1
@@ -372,7 +406,6 @@
   reagents:
     Vinaigrette: 5
   solids:
-    FoodBowlBig: 1
     FoodMothSaladBase: 1
     MaterialCotton1: 1
     FoodCarrot: 1
@@ -385,9 +418,8 @@
   reagents:
     JuiceLime: 5
   solids:
-    FoodBowlBig: 1
     FoodMothSaladBase: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
     FoodOnionRed: 1
     FoodAmbrosiaVulgaris: 1 #Herbs
 
@@ -404,7 +436,7 @@
     FoodDoughFlat: 1
     FoodCheeseSlice: 1
     FoodMothBakedCorn: 1
-    FoodChili: 1
+    FoodChiliPepper: 1
 
 - type: microwaveMealRecipe
   id: RecipeMothFiveCheesePizza

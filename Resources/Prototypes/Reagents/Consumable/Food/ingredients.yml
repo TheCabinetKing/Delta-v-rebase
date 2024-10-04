@@ -65,10 +65,26 @@
 
 - type: reagent
   id: Egg
+  name: reagent-name-raw-egg
+  group: Foods
+  desc: reagent-desc-raw-egg
+  physicalDesc: reagent-physical-desc-mucus-like
+  flavor: raw-egg
+  color: white
+  recognizable: true
+  metabolisms:
+    Food:
+      effects:
+      - !type:AdjustReagent
+        reagent: UncookedAnimalProteins
+        amount: 0.5
+
+- type: reagent
+  id: EggCooked
   name: reagent-name-egg
   group: Foods
   desc: reagent-desc-egg
-  physicalDesc: reagent-physical-desc-mucus-like
+  physicalDesc: reagent-physical-desc-fluffy
   flavor: egg
   color: white
   recognizable: true
@@ -77,7 +93,7 @@
       effects:
       - !type:AdjustReagent
         reagent: Protein
-        amount: 0.5
+        amount: 1
 
 - type: reagent
   id: Blackpepper
@@ -243,3 +259,20 @@
       - !type:AdjustReagent
         reagent: Nutriment
         amount: 0.75
+
+- type: reagent
+  id: TeaPowder
+  name: reagent-name-tea-powder
+  desc: reagent-desc-tea-powder
+  physicalDesc: reagent-physical-desc-powdery
+  flavor: tea
+  color: "#7F8400"
+  group: Foods
+  metabolisms:
+    Food:
+      effects:
+      - !type:SatiateThirst
+        factor: -0.2
+      - !type:AdjustReagent
+        reagent: Nutriment
+        amount: 0.1

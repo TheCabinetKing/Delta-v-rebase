@@ -7,7 +7,7 @@
     sprite: Objects/Specific/Mech/mecha_equipment.rsi
   - type: Item
     sprite: Objects/Specific/Mech/mecha_equipment.rsi
-    size: 50
+    size: Ginormous
   - type: MechEquipment
   - type: GuideHelp
     guides:
@@ -39,7 +39,7 @@
   - type: MechGrabber
     maxContents: 4
     grabDelay: 3
-    grabEnergyDelta: 20
+    grabEnergyDelta: -20
   - type: Tag
     tags:
     - SmallMech

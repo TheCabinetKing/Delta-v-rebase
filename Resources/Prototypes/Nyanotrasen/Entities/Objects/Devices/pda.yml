@@ -26,17 +26,25 @@
   components:
   - type: Pda
     id: PrisonGuardIDCard
-    state: pda-security
+    state: pda-prisonguard # - aPDA Sprite Rework
   - type: PdaBorderColor
     borderColor: "#A32D26"
     accentVColor: "#DFDFDF"
   - type: Icon
-    state: pda-security
+    state: pda-prisonguard # - aPDA Sprite Rework
+  - type: CartridgeLoader # DeltaV - Crime Assist + SecWatch, increased diskSpace by 2 to fit them
+    diskSpace: 7
+    preinstalled:
+      - CrewManifestCartridge
+      - NotekeeperCartridge
+      - NewsReaderCartridge
+      - CrimeAssistCartridge
+      - SecWatchCartridge
 
 - type: entity
   parent: BasePDA
   id: MailCarrierPDA
-  name: courier PDA # DeltaV - Mail Carrier to Courier replacement
+  name: mail carrier PDA
   description: Smells like unopened letters.
   components:
   - type: Sprite
@@ -100,9 +108,9 @@
     state: pda-science
   - type: Icon
     state: pda-science
-  # - type: CartridgeLoader
-  #   preinstalled:
-  #     - CrewManifestCartridge
-  #     - NotekeeperCartridge
-  #     - NewsReadCartridge
-  #     - GlimmerMonitorCartridge # Uncomment this entire thing if we re-implement the glimmer monitor.
+  - type: CartridgeLoader
+    preinstalled:
+     - CrewManifestCartridge
+     - NotekeeperCartridge
+     - NewsReaderCartridge
+     - GlimmerMonitorCartridge

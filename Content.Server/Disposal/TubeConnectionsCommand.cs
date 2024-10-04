@@ -2,7 +2,6 @@ using Content.Server.Administration;
 using Content.Server.Disposal.Tube;
 using Content.Server.Disposal.Tube.Components;
 using Content.Shared.Administration;
-using Robust.Server.Player;
 using Robust.Shared.Console;
 
 namespace Content.Server.Disposal
@@ -18,8 +17,13 @@ namespace Content.Server.Disposal
 
         public void Execute(IConsoleShell shell, string argStr, string[] args)
         {
-            var player = shell.Player as IPlayerSession;
-            if (player?.AttachedEntity == null)
+            if (shell.Player is not { } player)
+            {
+                shell.WriteError(Loc.GetString("shell-cannot-run-command-from-server"));
+                return;
+            }
+
+            if (player.AttachedEntity is not { } attached)
             {
                 shell.WriteLine(Loc.GetString("shell-only-players-can-run-this-command"));
                 return;

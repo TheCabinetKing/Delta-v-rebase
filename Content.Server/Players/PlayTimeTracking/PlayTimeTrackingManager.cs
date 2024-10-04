@@ -1,22 +1,23 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.Database;
 using Content.Shared.CCVar;
+using Content.Shared.Players;
 using Content.Shared.Players.PlayTimeTracking;
-using Robust.Server.Player;
 using Robust.Shared.Asynchronous;
 using Robust.Shared.Collections;
 using Robust.Shared.Configuration;
 using Robust.Shared.Exceptions;
 using Robust.Shared.Network;
+using Robust.Shared.Player;
 using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 
 namespace Content.Server.Players.PlayTimeTracking;
 
-public delegate void CalcPlayTimeTrackersCallback(IPlayerSession player, HashSet<string> trackers);
+public delegate void CalcPlayTimeTrackersCallback(ICommonSession player, HashSet<string> trackers);
 
 /// <summary>
 /// Tracks play time for players, across all roles.
@@ -54,7 +55,7 @@ public delegate void CalcPlayTimeTrackersCallback(IPlayerSession player, HashSet
 /// Operations like refreshing and sending play time info to clients are deferred until the next frame (note: not tick).
 /// </para>
 /// </remarks>
-public sealed partial class PlayTimeTrackingManager
+public sealed partial class PlayTimeTrackingManager : ISharedPlaytimeManager, IPostInjectInit
 {
     [Dependency] private readonly IServerDbManager _db = default!;
     [Dependency] private readonly IServerNetManager _net = default!;
@@ -62,11 +63,12 @@ public sealed partial class PlayTimeTrackingManager
     [Dependency] private readonly IGameTiming _timing = default!;
     [Dependency] private readonly ITaskManager _task = default!;
     [Dependency] private readonly IRuntimeLog _runtimeLog = default!;
+    [Dependency] private readonly UserDbDataManager _userDb = default!;
 
     private ISawmill _sawmill = default!;
 
     // List of players that need some kind of update (refresh timers or resend).
-    private ValueList<IPlayerSession> _playersDirty;
+    private ValueList<ICommonSession> _playersDirty;
 
     // DB auto-saving logic.
     private TimeSpan _saveInterval;
@@ -76,9 +78,11 @@ public sealed partial class PlayTimeTrackingManager
     // We must block server shutdown on these to avoid losing data.
     private readonly List<Task> _pendingSaveTasks = new();
 
-    private readonly Dictionary<IPlayerSession, PlayTimeData> _playTimeData = new();
+    private readonly Dictionary<ICommonSession, PlayTimeData> _playTimeData = new();
 
     public event CalcPlayTimeTrackersCallback? CalcTrackers;
+
+    public event Action<ICommonSession>? SessionPlayTimeUpdated;
 
     public void Initialize()
     {
@@ -134,13 +138,19 @@ public sealed partial class PlayTimeTrackingManager
                 data.NeedSendTimers = false;
             }
 
+            if (data.NeedRefreshWhitelist) // Nyanotrasen - Whitelist status
+            {
+                SendWhitelistCached(player);
+                data.NeedRefreshWhitelist = false;
+            }
+
             data.IsDirty = false;
         }
 
         _playersDirty.Clear();
     }
 
-    private void RefreshSingleTracker(IPlayerSession dirty, PlayTimeData data, TimeSpan time)
+    private void RefreshSingleTracker(ICommonSession dirty, PlayTimeData data, TimeSpan time)
     {
         DebugTools.Assert(data.Initialized);
 
@@ -182,7 +192,7 @@ public sealed partial class PlayTimeTrackingManager
     /// so APIs like <see cref="GetPlayTimeForTracker"/> return up-to-date info.
     /// </summary>
     /// <seealso cref="FlushAllTrackers"/>
-    public void FlushTracker(IPlayerSession player)
+    public void FlushTracker(ICommonSession player)
     {
         var time = _timing.RealTime;
         var data = _playTimeData[player];
@@ -202,7 +212,12 @@ public sealed partial class PlayTimeTrackingManager
         }
     }
 
-    private void SendPlayTimes(IPlayerSession pSession)
+    public IReadOnlyDictionary<string, TimeSpan> GetPlayTimes(ICommonSession session)
+    {
+        return GetTrackerTimes(session);
+    }
+
+    private void SendPlayTimes(ICommonSession pSession)
     {
         var roles = GetTrackerTimes(pSession);
 
@@ -211,7 +226,8 @@ public sealed partial class PlayTimeTrackingManager
             Trackers = roles
         };
 
-        _net.ServerSendMessage(msg, pSession.ConnectedClient);
+        _net.ServerSendMessage(msg, pSession.Channel);
+        SessionPlayTimeUpdated?.Invoke(pSession);
     }
 
     /// <summary>
@@ -229,7 +245,7 @@ public sealed partial class PlayTimeTrackingManager
     /// <summary>
     /// Save all modified time trackers for a player to the database.
     /// </summary>
-    public async void SaveSession(IPlayerSession session)
+    public async void SaveSession(ICommonSession session)
     {
         // This causes all trackers to refresh, ah well.
         FlushAllTrackers();
@@ -279,7 +295,7 @@ public sealed partial class PlayTimeTrackingManager
         _sawmill.Debug($"Saved {log.Count} trackers");
     }
 
-    private async Task DoSaveSessionAsync(IPlayerSession session)
+    private async Task DoSaveSessionAsync(ICommonSession session)
     {
         var log = new List<PlayTimeUpdate>();
 
@@ -300,12 +316,12 @@ public sealed partial class PlayTimeTrackingManager
         _sawmill.Debug($"Saved {log.Count} trackers for {session.Name}");
     }
 
-    public async Task LoadData(IPlayerSession session, CancellationToken cancel)
+    public async Task LoadData(ICommonSession session, CancellationToken cancel)
     {
         var data = new PlayTimeData();
         _playTimeData.Add(session, data);
 
-        var playTimes = await _db.GetPlayTimes(session.UserId);
+        var playTimes = await _db.GetPlayTimes(session.UserId, cancel);
         cancel.ThrowIfCancellationRequested();
 
         foreach (var timer in playTimes)
@@ -313,20 +329,23 @@ public sealed partial class PlayTimeTrackingManager
             data.TrackerTimes.Add(timer.Tracker, timer.TimeSpent);
         }
 
+        session.ContentData()!.Whitelisted = await _db.GetWhitelistStatusAsync(session.UserId); // Nyanotrasen - Whitelist
+
         data.Initialized = true;
 
         QueueRefreshTrackers(session);
         QueueSendTimers(session);
+        QueueSendWhitelist(session); // Nyanotrasen - Whitelist status
     }
 
-    public void ClientDisconnected(IPlayerSession session)
+    public void ClientDisconnected(ICommonSession session)
     {
         SaveSession(session);
 
         _playTimeData.Remove(session);
     }
 
-    public void AddTimeToTracker(IPlayerSession id, string tracker, TimeSpan time)
+    public void AddTimeToTracker(ICommonSession id, string tracker, TimeSpan time)
     {
         if (!_playTimeData.TryGetValue(id, out var data) || !data.Initialized)
             throw new InvalidOperationException("Play time info is not yet loaded for this player!");
@@ -342,17 +361,17 @@ public sealed partial class PlayTimeTrackingManager
         data.DbTrackersDirty.Add(tracker);
     }
 
-    public void AddTimeToOverallPlaytime(IPlayerSession id, TimeSpan time)
+    public void AddTimeToOverallPlaytime(ICommonSession id, TimeSpan time)
     {
         AddTimeToTracker(id, PlayTimeTrackingShared.TrackerOverall, time);
     }
 
-    public TimeSpan GetOverallPlaytime(IPlayerSession id)
+    public TimeSpan GetOverallPlaytime(ICommonSession id)
     {
         return GetPlayTimeForTracker(id, PlayTimeTrackingShared.TrackerOverall);
     }
 
-    public bool TryGetTrackerTimes(IPlayerSession id, [NotNullWhen(true)] out Dictionary<string, TimeSpan>? time)
+    public bool TryGetTrackerTimes(ICommonSession id, [NotNullWhen(true)] out Dictionary<string, TimeSpan>? time)
     {
         time = null;
 
@@ -365,7 +384,20 @@ public sealed partial class PlayTimeTrackingManager
         return true;
     }
 
-    public Dictionary<string, TimeSpan> GetTrackerTimes(IPlayerSession id)
+    public bool TryGetTrackerTime(ICommonSession id, string tracker, [NotNullWhen(true)] out TimeSpan? time)
+    {
+        time = null;
+        if (!TryGetTrackerTimes(id, out var times))
+            return false;
+
+        if (!times.TryGetValue(tracker, out var t))
+            return false;
+
+        time = t;
+        return true;
+    }
+
+    public Dictionary<string, TimeSpan> GetTrackerTimes(ICommonSession id)
     {
         if (!_playTimeData.TryGetValue(id, out var data) || !data.Initialized)
             throw new InvalidOperationException("Play time info is not yet loaded for this player!");
@@ -373,7 +405,7 @@ public sealed partial class PlayTimeTrackingManager
         return data.TrackerTimes;
     }
 
-    public TimeSpan GetPlayTimeForTracker(IPlayerSession id, string tracker)
+    public TimeSpan GetPlayTimeForTracker(ICommonSession id, string tracker)
     {
         if (!_playTimeData.TryGetValue(id, out var data) || !data.Initialized)
             throw new InvalidOperationException("Play time info is not yet loaded for this player!");
@@ -384,7 +416,7 @@ public sealed partial class PlayTimeTrackingManager
     /// <summary>
     /// Queue for play time trackers to be refreshed on a player, in case the set of active trackers may have changed.
     /// </summary>
-    public void QueueRefreshTrackers(IPlayerSession player)
+    public void QueueRefreshTrackers(ICommonSession player)
     {
         if (DirtyPlayer(player) is { } data)
             data.NeedRefreshTackers = true;
@@ -393,13 +425,13 @@ public sealed partial class PlayTimeTrackingManager
     /// <summary>
     /// Queue for play time information to be sent to a client, for showing in UIs etc.
     /// </summary>
-    public void QueueSendTimers(IPlayerSession player)
+    public void QueueSendTimers(ICommonSession player)
     {
         if (DirtyPlayer(player) is { } data)
             data.NeedSendTimers = true;
     }
 
-    private PlayTimeData? DirtyPlayer(IPlayerSession player)
+    private PlayTimeData? DirtyPlayer(ICommonSession player)
     {
         if (!_playTimeData.TryGetValue(player, out var data) || !data.Initialized)
             return null;
@@ -422,6 +454,7 @@ public sealed partial class PlayTimeTrackingManager
         public bool IsDirty;
         public bool NeedRefreshTackers;
         public bool NeedSendTimers;
+        public bool NeedRefreshWhitelist; // Nyanotrasen - Whitelist status
 
         // Active tracking info
         public readonly HashSet<string> ActiveTrackers = new();
@@ -440,5 +473,11 @@ public sealed partial class PlayTimeTrackingManager
         /// Set of trackers which are different from their DB values and need to be saved to DB.
         /// </summary>
         public readonly HashSet<string> DbTrackersDirty = new();
+    }
+
+    void IPostInjectInit.PostInject()
+    {
+        _userDb.AddOnLoadPlayer(LoadData);
+        _userDb.AddOnPlayerDisconnect(ClientDisconnected);
     }
 }

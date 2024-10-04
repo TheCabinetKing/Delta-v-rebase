@@ -53,15 +53,15 @@
   copyright: "William Gibson, reading Neuromancer on cassette tape (1984)"
   source: "https://www.youtube.com/playlist?list=PLYn090EvNBcinpVcrKNmYAHojxP7pnYC1"
 
-- files: ["pdpt.ogg"]
-  license: "Custom"
-  copyright: "Introduction to Serial Experiments Lain (1998)"
-  source: "https://en.wikipedia.org/wiki/Serial_Experiments_Lain"
-
 - files: ["quarterly_gains.ogg"]
   license: "Custom"
   copyright: "Armin Shimerman as Quark, Star Trek: Deep Space Nine, S4E06 'Starship Down' (1995)"
   source: "https://en.wikipedia.org/wiki/Star_Trek:_Deep_Space_Nine"
+  
+- files: ["safescience.ogg"]
+  license: "Custom"
+  copyright: "J.K. Simmons as Cave Johnson, Portal 2 (2011)"
+  source: "https://en.wikipedia.org/wiki/Portal_2"
 
 - files: ["secher_nbiw.ogg"]
   license: "Custom"
@@ -83,6 +83,11 @@
   copyright: "Alan Watts, a Conversation with Myself (1971)"
   source: "https://www.youtube.com/watch?v=KOc4MH2Eu18"
 
+- files: ["susguyeatscrew.ogg"]
+  license: "Custom"
+  copyright: "Jerma984's Viva Las Vegas Video on Youtube (2019)"
+  source: "https://www.youtube.com/watch?v=T4YmdEEl2m0&t=0s"
+
 - files: ["this_drink.ogg"]
   license: "Custom"
   copyright: "Ian Ziering as Edison Trent, Freelancer (2003)"
@@ -92,3 +97,8 @@
   license: "Custom"
   copyright: "Andrew J. Robinson as Elim Garak, Star Trek: Deep Space Nine, S3E20 'Improbable Cause' (1995)"
   source: "https://en.wikipedia.org/wiki/Star_Trek:_Deep_Space_Nine"
+
+- files: ["oney.ogg"]
+  license: "Custom"
+  copyright: "Chris O'Neil playing Spooky's House of Jumpscares (2019) on YouTube (2021)"
+  source: "https://www.youtube.com/watch?v=I-i7jKXf86I&t=3315"

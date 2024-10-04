@@ -1,23 +1,27 @@
 using Content.Server.AlertLevel;
 using Content.Server.CartridgeLoader;
+using Content.Server.Chat.Managers;
 using Content.Server.DeviceNetwork.Components;
 using Content.Server.Instruments;
 using Content.Server.Light.EntitySystems;
-using Content.Server.Light.Events;
-using Content.Server.MassMedia.Components;
-using Content.Server.MassMedia.Systems;
-using Content.Server.Mind;
 using Content.Server.PDA.Ringer;
 using Content.Server.Station.Systems;
 using Content.Server.Store.Components;
 using Content.Server.Store.Systems;
+using Content.Server.Traitor.Uplink;
 using Content.Shared.Access.Components;
 using Content.Shared.CartridgeLoader;
+using Content.Shared.Chat;
+using Content.Shared.Light;
 using Content.Shared.Light.Components;
+using Content.Shared.Light.EntitySystems;
 using Content.Shared.PDA;
+using Content.Shared.Store.Components;
+using Robust.Server.Containers;
 using Robust.Server.GameObjects;
-using Robust.Server.Player;
 using Robust.Shared.Containers;
+using Robust.Shared.Player;
+using Robust.Shared.Utility;
 
 namespace Content.Server.PDA
 {
@@ -28,8 +32,10 @@ namespace Content.Server.PDA
         [Dependency] private readonly RingerSystem _ringer = default!;
         [Dependency] private readonly StationSystem _station = default!;
         [Dependency] private readonly StoreSystem _store = default!;
+        [Dependency] private readonly IChatManager _chatManager = default!;
         [Dependency] private readonly UserInterfaceSystem _ui = default!;
         [Dependency] private readonly UnpoweredFlashlightSystem _unpoweredFlashlight = default!;
+        [Dependency] private readonly ContainerSystem _containerSystem = default!;
 
         public override void Initialize()
         {
@@ -38,6 +44,7 @@ namespace Content.Server.PDA
             SubscribeLocalEvent<PdaComponent, LightToggleEvent>(OnLightToggle);
 
             // UI Events:
+            SubscribeLocalEvent<PdaComponent, BoundUIOpenedEvent>(OnPdaOpen);
             SubscribeLocalEvent<PdaComponent, PdaRequestUpdateInterfaceMessage>(OnUiMessage);
             SubscribeLocalEvent<PdaComponent, PdaToggleFlashlightMessage>(OnUiMessage);
             SubscribeLocalEvent<PdaComponent, PdaShowRingtoneMessage>(OnUiMessage);
@@ -45,8 +52,24 @@ namespace Content.Server.PDA
             SubscribeLocalEvent<PdaComponent, PdaShowUplinkMessage>(OnUiMessage);
             SubscribeLocalEvent<PdaComponent, PdaLockUplinkMessage>(OnUiMessage);
 
+            SubscribeLocalEvent<PdaComponent, CartridgeLoaderNotificationSentEvent>(OnNotification);
+
             SubscribeLocalEvent<StationRenamedEvent>(OnStationRenamed);
+            SubscribeLocalEvent<EntityRenamedEvent>(OnEntityRenamed);
             SubscribeLocalEvent<AlertLevelChangedEvent>(OnAlertLevelChanged);
+        }
+
+        private void OnEntityRenamed(ref EntityRenamedEvent ev)
+        {
+            var query = EntityQueryEnumerator<PdaComponent>();
+
+            while (query.MoveNext(out var uid, out var comp))
+            {
+                if (comp.PdaOwner == ev.Uid)
+                {
+                    SetOwner(uid, comp, ev.Uid, ev.NewName);
+                }
+            }
         }
 
         protected override void OnComponentInit(EntityUid uid, PdaComponent pda, ComponentInit args)
@@ -68,7 +91,7 @@ namespace Content.Server.PDA
 
         protected override void OnItemRemoved(EntityUid uid, PdaComponent pda, EntRemovedFromContainerMessage args)
         {
-            if (args.Container.ID != pda.IdSlot.ID && args.Container.ID != pda.PenSlot.ID)
+            if (args.Container.ID != pda.IdSlot.ID && args.Container.ID != pda.PenSlot.ID && args.Container.ID != pda.PaiSlot.ID)
                 return;
 
             // TODO: This is super cursed just use compstates please.
@@ -85,9 +108,10 @@ namespace Content.Server.PDA
             UpdatePdaUi(uid, pda);
         }
 
-        public void SetOwner(EntityUid uid, PdaComponent pda, string ownerName)
+        public void SetOwner(EntityUid uid, PdaComponent pda, EntityUid owner, string ownerName)
         {
             pda.OwnerName = ownerName;
+            pda.PdaOwner = owner;
             UpdatePdaUi(uid, pda);
         }
 
@@ -103,11 +127,33 @@ namespace Content.Server.PDA
 
         private void UpdateAllPdaUisOnStation()
         {
-            var query = EntityQueryEnumerator<PdaComponent>();
+            var query = AllEntityQuery<PdaComponent>();
             while (query.MoveNext(out var ent, out var comp))
             {
                 UpdatePdaUi(ent, comp);
             }
+        }
+
+        private void OnNotification(Entity<PdaComponent> ent, ref CartridgeLoaderNotificationSentEvent args)
+        {
+            _ringer.RingerPlayRingtone(ent.Owner);
+
+            if (!_containerSystem.TryGetContainingContainer((ent, null, null), out var container)
+                || !TryComp<ActorComponent>(container.Owner, out var actor))
+                return;
+
+            var message = FormattedMessage.EscapeText(args.Message);
+            var wrappedMessage = Loc.GetString("pda-notification-message",
+                ("header", args.Header),
+                ("message", message));
+
+            _chatManager.ChatMessageToOne(
+                ChatChannel.Notifications,
+                message,
+                wrappedMessage,
+                EntityUid.Invalid,
+                false,
+                actor.PlayerSession.Channel);
         }
 
         /// <summary>
@@ -118,12 +164,12 @@ namespace Content.Server.PDA
             if (!Resolve(uid, ref pda, false))
                 return;
 
-            if (!_ui.TryGetUi(uid, PdaUiKey.Key, out var ui))
+            if (!_ui.HasUi(uid, PdaUiKey.Key))
                 return;
 
             var address = GetDeviceNetAddress(uid);
             var hasInstrument = HasComp<InstrumentComponent>(uid);
-            var showUplink = HasComp<StoreComponent>(uid) && IsUnlocked(uid);
+            var showUplink = HasComp<UplinkComponent>(uid) && IsUnlocked(uid);
 
             UpdateStationName(uid, pda);
             UpdateAlertLevel(uid, pda);
@@ -141,6 +187,7 @@ namespace Content.Server.PDA
                 GetNetEntity(loader.ActiveProgram),
                 pda.FlashlightOn,
                 pda.PenSlot.HasItem,
+                pda.PaiSlot.HasItem,
                 new PdaIdInfoText
                 {
                     ActualOwnerName = pda.OwnerName,
@@ -154,7 +201,15 @@ namespace Content.Server.PDA
                 hasInstrument,
                 address);
 
-            _ui.SetUiState(ui, state);
+            _ui.SetUiState(uid, PdaUiKey.Key, state);
+        }
+
+        private void OnPdaOpen(Entity<PdaComponent> ent, ref BoundUIOpenedEvent args)
+        {
+            if (!PdaUiKey.Key.Equals(args.UiKey))
+                return;
+
+            UpdatePdaUi(ent.Owner, ent.Comp);
         }
 
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaRequestUpdateInterfaceMessage msg)
@@ -170,8 +225,9 @@ namespace Content.Server.PDA
             if (!PdaUiKey.Key.Equals(msg.UiKey))
                 return;
 
-            if (TryComp<UnpoweredFlashlightComponent>(uid, out var flashlight))
-                _unpoweredFlashlight.ToggleLight(uid, flashlight);
+            // TODO PREDICTION
+            // When moving this to shared, fill in the user field
+            _unpoweredFlashlight.TryToggleLight(uid, user: null);
         }
 
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaShowRingtoneMessage msg)
@@ -180,7 +236,7 @@ namespace Content.Server.PDA
                 return;
 
             if (HasComp<RingerComponent>(uid))
-                _ringer.ToggleRingerUI(uid, (IPlayerSession) msg.Session);
+                _ringer.ToggleRingerUI(uid, msg.Actor);
         }
 
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaShowMusicMessage msg)
@@ -189,7 +245,7 @@ namespace Content.Server.PDA
                 return;
 
             if (TryComp<InstrumentComponent>(uid, out var instrument))
-                _instrument.ToggleInstrumentUi(uid, (IPlayerSession) msg.Session, instrument);
+                _instrument.ToggleInstrumentUi(uid, msg.Actor, instrument);
         }
 
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaShowUplinkMessage msg)
@@ -198,8 +254,8 @@ namespace Content.Server.PDA
                 return;
 
             // check if its locked again to prevent malicious clients opening locked uplinks
-            if (TryComp<StoreComponent>(uid, out var store) && IsUnlocked(uid))
-                _store.ToggleUi(msg.Session.AttachedEntity!.Value, uid, store);
+            if (HasComp<UplinkComponent>(uid) && IsUnlocked(uid))
+                _store.ToggleUi(msg.Actor, uid);
         }
 
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaLockUplinkMessage msg)

@@ -3,10 +3,20 @@
   name: guide-entry-science
   text: "/ServerInfo/Guidebook/Science/Science.xml"
   children:
+  - Technologies
   - AnomalousResearch
   - Xenoarchaeology
   - Robotics
-  - MachineUpgrading
+  - Psionics # Nyanotrasen - Psionics guidebook
+  - AltarsGolemancy # Nyanotrasen - Golemancy guidebook
+  - ReverseEngineering # Nyanotrasen - Reverse Engineering guidebook
+  - GlimmerCreatures # DeltaV
+
+- type: guideEntry
+  id: Technologies
+  name: guide-entry-technologies
+  text: "/ServerInfo/Guidebook/Science/Technologies.xml"
+  filterEnabled: True
 
 - type: guideEntry
   id: AnomalousResearch
@@ -32,12 +42,13 @@
   text: "/ServerInfo/Guidebook/Science/Xenoarchaeology.xml"
   children:
   - ArtifactReports
-  - TraversalDistorter
 
 - type: guideEntry
   id: Robotics
   name: guide-entry-robotics
   text: "/ServerInfo/Guidebook/Science/Robotics.xml"
+  children:
+  - Cyborgs
 
 - type: guideEntry
   id: ArtifactReports
@@ -45,11 +56,6 @@
   text: "/ServerInfo/Guidebook/Science/ArtifactReports.xml"
 
 - type: guideEntry
-  id: TraversalDistorter
-  name: guide-entry-traversal-distorter
-  text: "/ServerInfo/Guidebook/Science/TraversalDistorter.xml"
-
-- type: guideEntry
-  id: MachineUpgrading
-  name: guide-entry-machine-upgrading
-  text: "/ServerInfo/Guidebook/Science/MachineUpgrading.xml"
+  id: Cyborgs
+  name: guide-entry-cyborgs
+  text: "/ServerInfo/Guidebook/Science/Cyborgs.xml"

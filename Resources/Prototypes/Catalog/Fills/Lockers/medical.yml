@@ -45,10 +45,11 @@
     contents:
       - id: HandheldHealthAnalyzer
         prob: 0.6
+      - id: ClothingHeadMirror
+        prob: 0.1
       - id: ClothingHandsGlovesLatex
       - id: ClothingHeadsetMedical
-     # - id: ClothingEyesHudMedical #Removed until working properly
-      - id: ClothingBeltMedical
+      - id: ClothingEyesHudMedical
 #Yea. Those probs are fucked. Nothing I can do about orGroup behavior. Everything below this line is DeltaV.
 #If Wizden ever adds new Probs, throw their probs out, but keep new items if added
       - id: ClothingHeadHatSurgcapGreen
@@ -108,6 +109,8 @@
       - id: NitrousOxideTankFilled
         prob: 0.3
       - id: ClothingMaskSterile
+      - id: LunchboxMedicalFilledRandom # Delta-V Lunchboxes!
+        prob: 0.3
 
 - type: entity
   parent: LockerWallMedical
@@ -121,8 +124,7 @@
         prob: 0.6
       - id: ClothingHandsGlovesLatex
       - id: ClothingHeadsetMedical
-     # - id: ClothingEyesHudMedical #Removed until working properly
-      - id: ClothingBeltMedical
+      - id: ClothingEyesHudMedical
       - id: ClothingHeadHatSurgcapGreen
         prob: 0.1
         orGroup: Surgcaps
@@ -142,6 +144,8 @@
         prob: 0.05
         orGroup: Surgshrubs
       - id: ClothingMaskSterile
+      - id: LunchboxMedicalFilledRandom # Delta-V Lunchboxes!
+        prob: 0.3
 
 - type: entity
   id: LockerChemistryFilled
@@ -156,6 +160,7 @@
         prob: 0.3
       - id: BoxPillCanister
       - id: BoxBottle
+      - id: BoxVial
       - id: ChemBag
       - id: ClothingHandsGlovesLatex
       - id: ClothingHeadsetMedical
@@ -178,7 +183,10 @@
       - id: ClothingHandsGlovesLatex
       - id: ClothingHeadsetMedical
       - id: ClothingMaskSterile
+      - id: ClothingShoesBootsWinterParamedic #Delta V: Add departmental winter boots
       - id: MedkitFilled
+        prob: 0.3
+      - id: LunchboxMedicalFilledRandom # Delta-V Lunchboxes!
         prob: 0.3
 
 - type: entity
@@ -188,15 +196,19 @@
   components:
   - type: StorageFill
     contents:
-      - id: ClothingHeadHelmetVoidParamed
       - id: ClothingOuterHardsuitVoidParamed
       - id: ClothingOuterCoatParamedicWB
       - id: ClothingHeadHatParamedicsoft
+      - id: ClothingOuterWinterPara
       - id: ClothingUniformJumpsuitParamedic
       - id: ClothingUniformJumpskirtParamedic
       - id: ClothingEyesHudMedical
       - id: ClothingHandsGlovesLatex
       - id: ClothingHeadsetMedical
       - id: ClothingMaskSterile
+      - id: ClothingShoesBootsWinterParamedic #Delta V: Add departmental winter boots
+      - id: HandheldGPSBasic
       - id: MedkitFilled
+        prob: 0.3
+      - id: LunchboxMedicalFilledRandom # Delta-V Lunchboxes!
         prob: 0.3

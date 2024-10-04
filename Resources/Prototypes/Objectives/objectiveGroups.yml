@@ -12,17 +12,22 @@
   weights:
     CaptainIDStealObjective: 1
     CMOHyposprayStealObjective: 1
+    CMOCrewMonitorStealObjective: 1
     RDHardsuitStealObjective: 1
-    NukeDiskStealObjective: 1
     MagbootsStealObjective: 1
     # CorgiMeatStealObjective: 1 # DeltaV - Disable the horrible murder of Ian as an objective
     MantisKnifeStealObjective: 1 # Nyanotrasen - ForensicMantis steal objective, see Resources/Prototypes/Nyanotrasen/Objectives/traitor.yml
+    ClipboardStealObjective: 1
     CaptainGunStealObjective: 0.5
     CaptainJetpackStealObjective: 0.5
     HandTeleporterStealObjective: 0.5
+    #EnergyShotgunStealObjective: 0.5 # DeltaV - replaced by X-01 objective
     SecretDocumentsStealObjective: 0.5
     LOLuckyBillStealObjective: 0.5 # DeltaV - LO steal objective, see Resources/Prototypes/DeltaV/Objectives/traitor.yml
     HoPBookIanDossierStealObjective: 1 # DeltaV - HoP steal objective, see Resources/Prototypes/DeltaV/Objectives/traitor.yml
+    HoSGunStealObjective: 0.5 # DeltaV
+    PlutoniumCoreStealObjective: 0.5 # DeltaV, was reverted upstream
+    NukeDiskStealObjective: 0.25
 
 - type: weightedRandom
   id: TraitorObjectiveGroupKill
@@ -35,11 +40,91 @@
   weights:
     EscapeShuttleObjective: 1
     DieObjective: 0.05
+    #HijackShuttleObjective: 0.02
+    #BecomePsionicObjective: 1 # Nyanotrasen - Become Psionic objective, see Resources/Prototypes/Nyanotrasen/Objectives/traitor.yml
+    #BecomeGolemObjective: 0.5 # Nyanotrasen - Become a golem objective, see Resources/Prototypes/Nyanotrasen/Objectives/traitor.yml
 
 - type: weightedRandom
   id: TraitorObjectiveGroupSocial
   weights:
     RandomTraitorAliveObjective: 1
     RandomTraitorProgressObjective: 1
+    RaiseGlimmerObjective: 0.5 # Nyanotrasen - Raise glimmer to a target amount, see Resources/Prototypes/Nyanotrasen/Objectives/traitor.yml
 
+
+#Thief groups
+- type: weightedRandom
+  id: ThiefObjectiveGroups
+  weights:
+    ThiefObjectiveGroupCollection: 1
+    ThiefObjectiveGroupItem: 1
+
+- type: weightedRandom
+  id: ThiefBigObjectiveGroups
+  weights:
+    ThiefObjectiveGroupStructure: 1
+    ThiefObjectiveGroupAnimal: 1
+
+- type: weightedRandom
+  id: ThiefObjectiveGroupCollection
+  weights:
+    HeadCloakStealCollectionObjective: 1           #command
+    HeadBedsheetStealCollectionObjective: 1
+    StampStealCollectionObjective: 1
+    DoorRemoteStealCollectionObjective: 1
+    TechnologyDiskStealCollectionObjective: 1        #rnd
+    IDCardsStealCollectionObjective: 1
+    LAMPStealCollectionObjective: 2 #only for moth
+
+- type: weightedRandom
+  id: ThiefObjectiveGroupItem
+  weights:
+    ForensicScannerStealObjective: 1                    #sec
+    FlippoEngravedLighterStealObjective: 0.5
+    ClothingHeadHatWardenStealObjective: 1
+    ClothingNeckShockCollarStealObjective: 1
+    ClothingOuterHardsuitVoidParamedStealObjective: 1   #med
+    MedicalTechFabCircuitboardStealObjective: 1
+    ClothingHeadsetAltMedicalStealObjective: 1
+    FireAxeStealObjective: 1                            #eng
+    AmePartFlatpackStealObjective: 1
+    ExpeditionsCircuitboardStealObjective: 1            #sup
+    CargoShuttleCircuitboardStealObjective: 1
+    SalvageShuttleCircuitboardStealObjective: 1
+    ClothingEyesHudBeerStealObjective: 1                #srv
+    BibleStealObjective: 1
+    ClothingNeckGoldmedalStealObjective: 1              #other
+    ClothingNeckClownmedalStealObjective: 0.5
+
+- type: weightedRandom
+  id: ThiefObjectiveGroupStructure
+  weights:
+    NuclearBombStealObjective: 0.5
+    FaxMachineCaptainStealObjective: 1
+    ChemDispenserStealObjective: 1
+    XenoArtifactStealObjective: 1
+    FreezerHeaterStealObjective: 1
+    TegStealObjective: 1
+    BoozeDispenserStealObjective: 1
+    AltarNanotrasenStealObjective: 1
+    PlantRDStealObjective: 1
+    ToiletGoldenStealObjective: 1
+
+- type: weightedRandom
+  id: ThiefObjectiveGroupAnimal
+  weights:
+    IanStealObjective: 1
+    BingusStealObjective: 1
+    McGriffStealObjective: 1
+    WalterStealObjective: 1
+    MortyStealObjective: 1
+    RenaultStealObjective: 1
+    ShivaStealObjective: 1
+    TropicoStealObjective: 1
+    SilviaStealObjective: 1 #DeltaV - CMO steal objective, see Resources/Prototypes/DeltaV/Objectives/traitor.yml
+
+- type: weightedRandom
+  id: ThiefObjectiveGroupEscape
+  weights:
+    EscapeThiefShuttleObjective: 1
 #Changeling, crew, wizard, when you code it...

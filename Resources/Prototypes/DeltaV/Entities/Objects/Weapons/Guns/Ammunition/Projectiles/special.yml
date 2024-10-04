@@ -2,7 +2,7 @@
   id: BulletSpecial
   name: bullet (.38 special)
   parent: BaseBullet
-  noSpawn: true
+  categories: [ HideSpawnMenu ]
   components:
   - type: Projectile
     damage:
@@ -13,7 +13,7 @@
   id: BulletSpecialPractice
   name: bullet (.38 special practice)
   parent: BaseBulletPractice
-  noSpawn: true
+  categories: [ HideSpawnMenu ]
   components:
   - type: Projectile
     damage:
@@ -24,34 +24,74 @@
   id: BulletSpecialRubber
   name: bullet (.38 special rubber)
   parent: BaseBulletRubber
-  noSpawn: true
+  categories: [ HideSpawnMenu ]
   components:
   - type: Projectile
     damage:
       types:
         Blunt: 3
   - type: StaminaDamageOnCollide
-    damage: 35 # 3 hits to stun cuz revolver
+    damage: 30
+
+- type: entity
+  id: BulletSpecialIncendiary
+  name: bullet (.38 special incendiary)
+  parent: BaseBulletIncendiary
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Projectile
+    damage:
+      types:
+        Blunt: 3
+        Heat: 27
+
+- type: entity
+  id: BulletSpecialUranium
+  name: bullet (.38 special uranium)
+  parent: BaseBulletUranium
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Projectile
+    damage:
+      types:
+        Radiation: 12
+        Piercing: 18
 
 - type: entity
   id: BulletSpecialHoly
   name: bullet (.38 special holy)
   parent: BaseBullet
-  noSpawn: true
+  categories: [ HideSpawnMenu ]
   components:
   - type: Projectile
     damage:
       types:
-        Blunt: 3
-        Holy: 5
+        Holy: 6
+        Piercing: 25
 
 - type: entity
   id: BulletSpecialMindbreaker
   name: bullet (.38 special mindbreaker)
-  parent: BaseBullet
-  noSpawn: true
+  parent: BaseBulletPractice
+  categories: [ HideSpawnMenu ]
   components:
   - type: Projectile
     damage:
       types:
-        Blunt: 3
+        Blunt: 1
+  - type: SolutionContainerManager
+    solutions:
+      ammo:
+        maxVol: 9
+  - type: RefillableSolution
+    solution: ammo
+  - type: DrainableSolution
+    solution: ammo
+  - type: SolutionInjectOnProjectileHit
+    transferAmount: 9
+    blockSlots: NONE #shouldn't be blocked by a mask
+  - type: InjectableSolution
+    solution: ammo
+  - type: GuideHelp
+    guides:
+    - Psionics

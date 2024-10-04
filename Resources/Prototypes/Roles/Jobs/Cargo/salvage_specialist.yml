@@ -3,10 +3,10 @@
   name: job-name-salvagespec
   description: job-description-salvagespec
   playTimeTracker: JobSalvageSpecialist
-  antagAdvantage: 3 # DeltaV - Reduced TC: External Access + Free hardsuit and weapons
+  antagAdvantage: 8 # DeltaV - Reduced TC: External Access + Free hardsuit and weapons
   requirements:
     - !type:DepartmentTimeRequirement
-      department: Cargo
+      department: Logistics # DeltaV - Logistics Department replacing Cargo
       time: 21600 #DeltaV 6 hrs
   #  - !type:OverallPlaytimeRequirement #DeltaV
   #    time: 36000 #10 hrs
@@ -23,9 +23,8 @@
   id: SalvageSpecialistGear
   equipment:
     jumpsuit: ClothingUniformJumpsuitSalvageSpecialist
-    back: ClothingBackpackSalvageFilled
-    shoes: ClothingShoesBootsSalvage
-    id: SalvagePDA
+    #id: SalvagePDA # DeltaV: different PDAs in loadouts
     ears: ClothingHeadsetCargo
-  satchel: ClothingBackpackSatchelSalvageFilled
-  duffelbag: ClothingBackpackDuffelSalvageFilled
+  #storage:
+    #back:
+    #- Stuff

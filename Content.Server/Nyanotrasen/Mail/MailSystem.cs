@@ -9,8 +9,10 @@ using Content.Server.Access.Systems;
 using Content.Server.Cargo.Components;
 using Content.Server.Cargo.Systems;
 using Content.Server.Chat.Systems;
+using Content.Server.Chemistry.Containers.EntitySystems;
 using Content.Server.Chemistry.EntitySystems;
 using Content.Server.Damage.Components;
+using Content.Server.DeltaV.Cargo.Components;
 using Content.Server.Destructible;
 using Content.Server.Destructible.Thresholds;
 using Content.Server.Destructible.Thresholds.Behaviors;
@@ -25,6 +27,7 @@ using Content.Server.Popups;
 using Content.Server.Power.Components;
 using Content.Server.Station.Systems;
 using Content.Server.Spawners.EntitySystems;
+using Content.Shared.Access;
 using Content.Shared.Access.Components;
 using Content.Shared.Access.Systems;
 using Content.Shared.Chemistry.EntitySystems;
@@ -33,17 +36,24 @@ using Content.Shared.Emag.Components;
 using Content.Shared.Destructible;
 using Content.Shared.Emag.Systems;
 using Content.Shared.Examine;
+using Content.Shared.Fluids.Components;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction;
 using Content.Shared.Interaction.Events;
+using Content.Shared.Item;
 using Content.Shared.Mail;
 using Content.Shared.Maps;
+using Content.Shared.Nutrition.Components;
+using Content.Shared.Nutrition.EntitySystems;
 using Content.Shared.PDA;
 using Content.Shared.Random.Helpers;
 using Content.Shared.Roles;
+using Content.Shared.StatusIcon;
 using Content.Shared.Storage;
 using Content.Shared.Tag;
+using Robust.Shared.Audio.Systems;
 using Timer = Robust.Shared.Timing.Timer;
+using Content.Server.DeltaV.Cargo.Systems;
 
 namespace Content.Server.Mail
 {
@@ -67,6 +77,10 @@ namespace Content.Server.Mail
         [Dependency] private readonly DamageableSystem _damageableSystem = default!;
         [Dependency] private readonly ItemSystem _itemSystem = default!;
         [Dependency] private readonly MindSystem _mindSystem = default!;
+        [Dependency] private readonly MetaDataSystem _metaDataSystem = default!;
+
+        // DeltaV - system that keeps track of mail and cargo stats
+        [Dependency] private readonly LogisticStatsSystem _logisticsStatsSystem = default!;
 
         private ISawmill _sawmill = default!;
 
@@ -212,6 +226,13 @@ namespace Content.Server.Mail
                 }
             }
 
+            // DeltaV - Add earnings to logistic stats
+            ExecuteForEachLogisticsStats(uid, (station, logisticStats) =>
+            {
+                _logisticsStatsSystem.AddOpenedMailEarnings(station,
+                    logisticStats,
+                    component.IsProfitable ? component.Bounty : 0);
+            });
             UnlockMail(uid, component);
 
             if (!component.IsProfitable)
@@ -231,19 +252,19 @@ namespace Content.Server.Mail
                     continue;
 
                 _cargoSystem.UpdateBankAccount(station, account, component.Bounty);
-                return;
             }
         }
 
         private void OnExamined(EntityUid uid, MailComponent component, ExaminedEvent args)
         {
+            MailEntityStrings mailEntityStrings = component.IsLarge ? MailConstants.MailLarge : MailConstants.Mail; //Frontier: mail types stored per type (large mail)
             if (!args.IsInDetailsRange)
             {
-                args.PushMarkup(Loc.GetString("mail-desc-far"));
+                args.PushMarkup(Loc.GetString(mailEntityStrings.DescFar)); // Frontier: mail constants struct
                 return;
             }
 
-            args.PushMarkup(Loc.GetString("mail-desc-close", ("name", component.Recipient), ("job", component.RecipientJob)));
+            args.PushMarkup(Loc.GetString(mailEntityStrings.DescClose, ("name", component.Recipient), ("job", component.RecipientJob))); // Frontier: mail constants struct
 
             if (component.IsFragile)
                 args.PushMarkup(Loc.GetString("mail-desc-fragile"));
@@ -296,7 +317,17 @@ namespace Content.Server.Mail
         private void OnDestruction(EntityUid uid, MailComponent component, DestructionEventArgs args)
         {
             if (component.IsLocked)
+            {
+                // DeltaV - Tampered mail recorded to logistic stats
+                ExecuteForEachLogisticsStats(uid, (station, logisticStats) =>
+                {
+                    _logisticsStatsSystem.AddTamperedMailLosses(station,
+                        logisticStats,
+                        component.IsProfitable ? component.Penalty : 0);
+                });
+
                 PenalizeStationFailedDelivery(uid, component, "mail-penalty-lock");
+            }
 
             if (component.IsEnabled)
                 OpenMail(uid, component);
@@ -325,7 +356,17 @@ namespace Content.Server.Mail
             _appearanceSystem.SetData(uid, MailVisuals.IsBroken, true);
 
             if (component.IsFragile)
+            {
+                // DeltaV - Broken mail recorded to logistic stats
+                ExecuteForEachLogisticsStats(uid, (station, logisticStats) =>
+                {
+                    _logisticsStatsSystem.AddDamagedMailLosses(station,
+                        logisticStats,
+                        component.IsProfitable ? component.Penalty : 0);
+                });
+
                 PenalizeStationFailedDelivery(uid, component, "mail-penalty-fragile");
+            }
         }
 
         private void OnMailEmagged(EntityUid uid, MailComponent component, ref GotEmaggedEvent args)
@@ -424,21 +465,6 @@ namespace Content.Server.Mail
             return false;
         }
 
-        public bool TryMatchJobTitleToIcon(string jobTitle, [NotNullWhen(true)] out string? jobIcon)
-        {
-            foreach (var job in _prototypeManager.EnumeratePrototypes<JobPrototype>())
-            {
-                if (job.LocalizedName == jobTitle)
-                {
-                    jobIcon = job.Icon;
-                    return true;
-                }
-            }
-
-            jobIcon = null;
-            return false;
-        }
-
         /// <summary>
         /// Handle all the gritty details particular to a new mail entity.
         /// </summary>
@@ -453,7 +479,8 @@ namespace Content.Server.Mail
             foreach (var item in EntitySpawnCollection.GetSpawns(mailComp.Contents, _random))
             {
                 var entity = EntityManager.SpawnEntity(item, Transform(uid).Coordinates);
-                if (!container.Insert(entity))
+
+                if (!_containerSystem.Insert(entity, container))
                 {
                     _sawmill.Error($"Can't insert {ToPrettyString(entity)} into new mail delivery {ToPrettyString(uid)}! Deleting it.");
                     QueueDel(entity);
@@ -475,6 +502,15 @@ namespace Content.Server.Mail
             mailComp.RecipientJob = recipient.Job;
             mailComp.Recipient = recipient.Name;
 
+            // Frontier: Large mail bonus
+            MailEntityStrings mailEntityStrings = mailComp.IsLarge ? MailConstants.MailLarge : MailConstants.Mail;
+            if (mailComp.IsLarge)
+            {
+                mailComp.Bounty += component.LargeBonus;
+                mailComp.Penalty += component.LargeMalus;
+            }
+            // End Frontier
+
             if (mailComp.IsFragile)
             {
                 mailComp.Bounty += component.FragileBonus;
@@ -491,18 +527,31 @@ namespace Content.Server.Mail
                 mailComp.priorityCancelToken = new CancellationTokenSource();
 
                 Timer.Spawn((int) component.priorityDuration.TotalMilliseconds,
-                    () => PenalizeStationFailedDelivery(uid, mailComp, "mail-penalty-expired"),
+                    () =>
+                    {
+                        // DeltaV - Expired mail recorded to logistic stats
+                        ExecuteForEachLogisticsStats(uid, (station, logisticStats) =>
+                        {
+                            _logisticsStatsSystem.AddExpiredMailLosses(station,
+                                logisticStats,
+                                mailComp.IsProfitable ? mailComp.Penalty : 0);
+                        });
+
+                        PenalizeStationFailedDelivery(uid, mailComp, "mail-penalty-expired");
+                    },
                     mailComp.priorityCancelToken.Token);
             }
 
-            if (TryMatchJobTitleToIcon(recipient.Job, out string? icon))
-                _appearanceSystem.SetData(uid, MailVisuals.JobIcon, icon);
+            _appearanceSystem.SetData(uid, MailVisuals.JobIcon, recipient.JobIcon);
 
-            MetaData(uid).EntityName = Loc.GetString("mail-item-name-addressed",
-                ("recipient", recipient.Name));
+            _metaDataSystem.SetEntityName(uid, Loc.GetString(mailEntityStrings.NameAddressed, // Frontier: move constant to MailEntityString
+                ("recipient", recipient.Name)));
 
             var accessReader = EnsureComp<AccessReaderComponent>(uid);
-            accessReader.AccessLists.Add(recipient.AccessTags);
+            foreach (var access in recipient.AccessTags)
+            {
+                accessReader.AccessLists.Add(new HashSet<ProtoId<AccessLevelPrototype>>{access});
+            }
         }
 
         /// <summary>
@@ -563,20 +612,16 @@ namespace Content.Server.Mail
 
             if (_idCardSystem.TryFindIdCard(receiver.Owner, out var idCard)
                 && TryComp<AccessComponent>(idCard.Owner, out var access)
-                && idCard.FullName != null
-                && idCard.JobTitle != null)
+                && idCard.Comp.FullName != null
+                && idCard.Comp.JobTitle != null)
             {
-                HashSet<String> accessTags = access.Tags;
+                var accessTags = access.Tags;
 
-                var mayReceivePriorityMail = true;
+                var mayReceivePriorityMail = !(_mindSystem.GetMind(receiver.Owner) == null);
 
-                if (_mindSystem.GetMind(receiver.Owner) == null)
-                {
-                    mayReceivePriorityMail = false;
-                }
-
-                recipient = new MailRecipient(idCard.FullName,
-                    idCard.JobTitle,
+                recipient = new MailRecipient(idCard.Comp.FullName,
+                    idCard.Comp.JobTitle,
+                    idCard.Comp.JobIcon,
                     accessTags,
                     mayReceivePriorityMail);
 
@@ -678,6 +723,8 @@ namespace Content.Server.Mail
 
                 var mail = EntityManager.SpawnEntity(chosenParcel, Transform(uid).Coordinates);
                 SetupMail(mail, component, candidate);
+
+                _tagSystem.AddTag(mail, "Mail"); // Frontier
             }
 
             if (_containerSystem.TryGetContainer(uid, "queued", out var queued))
@@ -708,7 +755,6 @@ namespace Content.Server.Mail
                 _handsSystem.PickupOrDrop(user, entity);
             }
 
-            _itemSystem.SetSize(uid, 1);
             _tagSystem.AddTag(uid, "Trash");
             _tagSystem.AddTag(uid, "Recyclable");
             component.IsEnabled = false;
@@ -724,19 +770,36 @@ namespace Content.Server.Mail
         {
             _appearanceSystem.SetData(uid, MailVisuals.IsTrash, isTrash);
         }
+
+        // DeltaV - Helper function that executes for each StationLogisticsStatsComponent
+        // For updating MailMetrics stats
+        private void ExecuteForEachLogisticsStats(EntityUid uid,
+            Action<EntityUid, StationLogisticStatsComponent> action)
+        {
+
+            var query = EntityQueryEnumerator<StationLogisticStatsComponent>();
+            while (query.MoveNext(out var station, out var logisticStats))
+            {
+                if (_stationSystem.GetOwningStation(uid) != station)
+                    continue;
+                action(station, logisticStats);
+            }
+        }
     }
 
     public struct MailRecipient
     {
         public string Name;
         public string Job;
-        public HashSet<String> AccessTags;
+        public string JobIcon;
+        public HashSet<ProtoId<AccessLevelPrototype>> AccessTags;
         public bool MayReceivePriorityMail;
 
-        public MailRecipient(string name, string job, HashSet<String> accessTags, bool mayReceivePriorityMail)
+        public MailRecipient(string name, string job, string jobIcon, HashSet<ProtoId<AccessLevelPrototype>> accessTags, bool mayReceivePriorityMail)
         {
             Name = name;
             Job = job;
+            JobIcon = jobIcon;
             AccessTags = accessTags;
             MayReceivePriorityMail = mayReceivePriorityMail;
         }

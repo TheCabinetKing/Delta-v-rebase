@@ -3,9 +3,10 @@
   name: job-name-scientist
   description: job-description-scientist
   playTimeTracker: JobScientist
+  antagAdvantage: 2 # DeltaV - Protolathe, anomaly stuff, glimmer factor.   
   requirements:
     - !type:DepartmentTimeRequirement
-      department: Science
+      department: Epistemics # DeltaV - Epistemics Department replacing Science
       time: 14400 #4 hrs
   startingGear: ScientistGear
   icon: "JobIconScientist"
@@ -17,12 +18,7 @@
 - type: startingGear
   id: ScientistGear
   equipment:
-    jumpsuit: ClothingUniformJumpsuitScientist
-    back: ClothingBackpackScienceFilled
-    shoes: ClothingShoesColorWhite
-    outerClothing: ClothingOuterCoatRnd
-    id: SciencePDA
     ears: ClothingHeadsetScience
-  innerClothingSkirt: ClothingUniformJumpskirtScientist
-  satchel: ClothingBackpackSatchelScienceFilled
-  duffelbag: ClothingBackpackDuffelScienceFilled
+  #storage:
+    #back:
+    #- Stuff

@@ -70,9 +70,16 @@ public sealed partial class ContainmentFieldGeneratorComponent : Component
     public string IDTag = "EmitterBolt";
 
     /// <summary>
+    /// Which fixture ID should test collision with from the entity that powers the generator?
+    /// Prevents the generator from being powered by fly-by fixtures.
+    /// </summary>
+    [DataField]
+    public string SourceFixtureId = "projectile";
+
+    /// <summary>
     /// Is the generator toggled on?
     /// </summary>
-    [ViewVariables]
+    [DataField]
     public bool Enabled;
 
     /// <summary>
@@ -92,7 +99,7 @@ public sealed partial class ContainmentFieldGeneratorComponent : Component
     /// Stores a list of fields connected between generators in this direction.
     /// </summary>
     [ViewVariables]
-    public Dictionary<Direction, (ContainmentFieldGeneratorComponent, List<EntityUid>)> Connections = new();
+    public Dictionary<Direction, (Entity<ContainmentFieldGeneratorComponent>, List<EntityUid>)> Connections = new();
 
     /// <summary>
     /// What fields should this spawn?
